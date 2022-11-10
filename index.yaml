@@ -612,6 +612,45 @@ entries:
     urls:
     - assets/rancher-thanos/rancher-thanos-0.0.1.tgz
     version: 0.0.1
+  rancher-tke-operator:
+  - annotations:
+      catalog.cattle.io/auto-install: rancher-tke-operator-crd=match
+      catalog.cattle.io/certified: rancher
+      catalog.cattle.io/hidden: "true"
+      catalog.cattle.io/namespace: cattle-system
+      catalog.cattle.io/os: linux
+      catalog.cattle.io/provides-gvr: tkeclusterconfigs.tke.cattle.io/v1
+      catalog.cattle.io/rancher-version: '>= 2.6.0-alpha'
+      catalog.cattle.io/release-name: rancher-tke-operator
+      catalog.cattle.io/scope: management
+    apiVersion: v2
+    appVersion: 1.0.1
+    created: "2022-11-10T11:10:14.420185+08:00"
+    description: A Helm chart for provisioning TKE clusters
+    digest: 3b7314b6d1cc5d1374ebec8837d7df68f6f25106943df88e5f280c29e46506a6
+    home: https://github.com/cnrancher/tke-operator
+    name: rancher-tke-operator
+    sources:
+    - https://github.com/cnrancher/tke-operator
+    urls:
+    - assets/rancher-tke-operator/rancher-tke-operator-100.0.0+up1.0.1.tgz
+    version: 100.0.0+up1.0.1
+  rancher-tke-operator-crd:
+  - annotations:
+      catalog.cattle.io/certified: rancher
+      catalog.cattle.io/hidden: "true"
+      catalog.cattle.io/namespace: cattle-system
+      catalog.cattle.io/os: linux
+      catalog.cattle.io/release-name: rancher-tke-operator-crd
+    apiVersion: v2
+    appVersion: 1.0.1
+    created: "2022-11-10T11:10:14.483316+08:00"
+    description: TKE Operator CustomResourceDefinitions
+    digest: 9dc4888531ea5a12e1cb55cc8f5b13629012259b561dac3f3137bbe6597e1f21
+    name: rancher-tke-operator-crd
+    urls:
+    - assets/rancher-tke-operator-crd/rancher-tke-operator-crd-100.0.0+up1.0.1.tgz
+    version: 100.0.0+up1.0.1
   virtaitech-orion-vgpu:
   - apiVersion: v1
     appVersion: "2.2"
