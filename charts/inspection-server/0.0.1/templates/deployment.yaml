@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    chart: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+  name: {{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      chart: {{ .Chart.Name }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        chart: {{ .Chart.Name }}
+        release: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ .Chart.Name }}-serviceaccount
+      containers:
+      - env:
+        - name: SERVER_URL
+          value: {{ .Values.serverUrl }}
+        - name: BEARER_TOKEN
+          value: {{ .Values.token }}
+{{- if .Values.mysql.enable }}
+        - name: MY_SQL
+          value: {{ .Values.mysql.enable }}
+        - name: MY_SQL_USER
+          value: {{ .Values.mysql.user }}
+        - name: MY_SQL_PASSWORD
+          value: {{ .Values.mysql.password }}
+        - name: MY_SQL_HOST
+          value: {{ .Values.mysql.host }}
+        - name: MY_SQL_PORT
+          value: {{ .Values.mysql.port }}
+        - name: MY_SQL_DB
+          value: {{ .Values.mysql.database }}
+{{- end }} 
+        name: inspection-server
+        image: {{ template "system_default_registry" . }}{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}
+        imagePullPolicy: {{ .Values.server.image.pullPolicy }}
+        ports:
+        - name: server
+          containerPort: {{ .Values.server.port }}
+          protocol: TCP
+        command:
+        - /inspection-server    
+{{- if .Values.server.resources }}
+        resources:
+{{ toYaml .Values.server.resources | indent 10 }}
+{{- end }}
+{{- if .Values.yaml.configmapName }}
+        volumeMounts:
+        - name: yaml
+          mountPath: /opt/yaml
+{{- end }}
+      - env:
+        - name: SERVER_URL
+          value: {{ .Values.serverUrl }}
+        - name: BEARER_TOKEN
+          value: {{ .Values.token }}
+        name: inspection-ui
+        image: "{{ template "system_default_registry" . }}{{ .Values.ui.image.repository }}:{{ .Values.ui.image.tag }}"
+        imagePullPolicy: {{ .Values.ui.image.pullPolicy }}
+        ports:
+        - name: ui
+          containerPort: {{ .Values.ui.port }}
+          protocol: TCP
+{{- if .Values.resources }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+{{- end }}
+{{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+{{- end }}
+      nodeSelector: {{ include "linux-node-selector" . | nindent 8 }}
+{{- if .Values.nodeSelector }}
+{{ toYaml .Values.nodeSelector | indent 8 }}
+{{- end }}
+      tolerations: {{ include "linux-node-tolerations" . | nindent 8 }}
+{{- if .Values.tolerations }}
+{{ toYaml .Values.tolerations | indent 8 }}
+{{- end }}
+{{- if .Values.yaml.configmapName }}
+      volumes:
+      - name: yaml
+        configMap:
+          name: {{ .Values.yaml.configmapNamee }}
+{{- end }}
+
+
