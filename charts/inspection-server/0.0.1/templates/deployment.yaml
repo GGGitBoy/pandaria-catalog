@@ -24,20 +24,20 @@ spec:
           value: {{ .Values.serverUrl }}
         - name: BEARER_TOKEN
           value: {{ .Values.token }}
-{{- if .Values.mysql.enable }}
+        {{- if .Values.mysql.enable }}
         - name: MY_SQL
           value: "true"
         - name: MY_SQL_USER
           value: {{ .Values.mysql.user }}
         - name: MY_SQL_PASSWORD
-          value: "{{ .Values.mysql.password | quote }}"
+          value: {{ .Values.mysql.password | quote }}
         - name: MY_SQL_HOST
           value: {{ .Values.mysql.host }}
         - name: MY_SQL_PORT
-          value: "{{ .Values.mysql.port | quote }}"
+          value: {{ .Values.mysql.port | quote }}
         - name: MY_SQL_DB
           value: {{ .Values.mysql.database }}
-{{- end }} 
+        {{- end }}
         name: inspection-server
         image: {{ template "system_default_registry" . }}{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}
         imagePullPolicy: {{ .Values.server.image.pullPolicy }}
