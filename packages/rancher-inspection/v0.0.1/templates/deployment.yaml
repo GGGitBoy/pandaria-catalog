@@ -55,10 +55,14 @@ spec:
         resources:
 {{ toYaml .Values.server.resources | indent 10 }}
 {{- end }}
-{{- if .Values.yaml.configmapName }}
         volumeMounts:
+{{- if .Values.yaml.configmapName }}
         - name: yaml
           mountPath: /opt/yaml
+{{- end }}
+{{- if .Values.server.pvc.name }}
+        - mountPath: /opt
+          name: inspection-pvc
 {{- end }}
       - env:
         - name: SERVER_URL
@@ -88,11 +92,16 @@ spec:
 {{- if .Values.tolerations }}
 {{ toYaml .Values.tolerations | indent 8 }}
 {{- end }}
-{{- if .Values.yaml.configmapName }}
       volumes:
+{{- if .Values.yaml.configmapName }}
       - name: yaml
         configMap:
           name: {{ .Values.yaml.configmapNamee }}
+{{- end }}
+{{- if .Values.server.pvc.name }}
+      - name: inspection-pvc
+        persistentVolumeClaim:
+          claimName: {{ .Values.server.pvc.name }}
 {{- end }}
 
 
