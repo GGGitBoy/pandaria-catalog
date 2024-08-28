@@ -49,6 +49,9 @@ spec:
           - mountPath: /etc/thanos/config.yaml
             name: objstore-config
             subPath: config.yaml
+      securityContext:
+        runAsGroup: 0
+        runAsUser: 0
       nodeSelector:
       {{- include "linux-node-selector" . | nindent 8 }}
       {{- with .Values.compact.nodeSelector }}
