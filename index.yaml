@@ -10,9 +10,9 @@ entries:
       catalog.cattle.io/release-name: inspection-server
       catalog.cattle.io/type: cluster-tool
     apiVersion: v2
-    created: "2024-08-22T10:16:58.402058+08:00"
+    created: "2024-08-28T15:03:40.194817+08:00"
     description: A Helm chart for fot inspection server
-    digest: 4c57e579fcbd08c4f9e380aba7af9c17545b59f85c439a77d896d179cc0e6cf6
+    digest: e9b25e442ede3e33a962c31a212194e31919b878586c762175e21e7d7b402c22
     keywords:
     - inspection
     name: inspection-server

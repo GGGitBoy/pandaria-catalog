@@ -38,6 +38,10 @@ spec:
         - name: MY_SQL_DB
           value: {{ .Values.mysql.database }}
         {{- end }}
+        {{- if .Values.global.systemDefaultRegistry }}
+        - name: SYSTEM_DEFAULT_REGISTRY
+          value: {{ .Values.global.systemDefaultRegistry }}
+        {{- end }}
         name: inspection-server
         image: {{ template "system_default_registry" . }}{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}
         imagePullPolicy: {{ .Values.server.image.pullPolicy }}
