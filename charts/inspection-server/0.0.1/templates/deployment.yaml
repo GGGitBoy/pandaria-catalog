@@ -61,7 +61,7 @@ spec:
           mountPath: /opt/yaml
 {{- end }}
 {{- if .Values.server.pvc.name }}
-        - mountPath: /opt
+        - mountPath: /opt/db
           name: inspection-pvc
 {{- end }}
       - env:
