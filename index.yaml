@@ -10,9 +10,9 @@ entries:
       catalog.cattle.io/release-name: inspection-server
       catalog.cattle.io/type: cluster-tool
     apiVersion: v2
-    created: "2024-08-29T09:01:42.691351+08:00"
+    created: "2024-09-03T17:24:52.871807+08:00"
     description: A Helm chart for fot inspection server
-    digest: 7dae83721d3d7807dfcff636719861a71942ba9d5cf1052daf90dabf7e1b6f4b
+    digest: 0adecadc10df8b9c3dfbba662e9e4ec2dce3a916cdd2bd4e56388a662c0a3227
     keywords:
     - inspection
     name: inspection-server
@@ -1000,7 +1000,7 @@ entries:
       catalog.cattle.io/kube-version: '>= 1.20.0-0'
       catalog.cattle.io/rancher-version: '>= 2.6.0-0'
     apiVersion: v2
-    created: "2024-08-28T18:52:37.072753+08:00"
+    created: "2024-09-03T17:24:53.351597+08:00"
     dependencies:
     - condition: grafana.enabled
       name: grafana
@@ -1012,7 +1012,7 @@ entries:
       name: ui
       repository: file://./charts/ui
     description: A Helm chart for Rancher v2 global monitoring
-    digest: 0111650423270a835d2d6698d7201fe3fb4ad5a0dea8c3c11f0aa3ccd98b1750
+    digest: 9aab2074e8a37b90444d066a42a03829e34dd1bbf46d408787c8f488d23d6c9e
     icon: https://pandaria-catalog.oss-cn-hangzhou.aliyuncs.com/assets/logo/rancher-thanos.png
     keywords:
     - thanos
