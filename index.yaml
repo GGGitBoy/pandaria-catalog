@@ -1000,7 +1000,7 @@ entries:
       catalog.cattle.io/kube-version: '>= 1.20.0-0'
       catalog.cattle.io/rancher-version: '>= 2.6.0-0'
     apiVersion: v2
-    created: "2024-09-03T17:24:53.351597+08:00"
+    created: "2024-09-05T12:48:17.89305+08:00"
     dependencies:
     - condition: grafana.enabled
       name: grafana
@@ -1012,7 +1012,7 @@ entries:
       name: ui
       repository: file://./charts/ui
     description: A Helm chart for Rancher v2 global monitoring
-    digest: 9aab2074e8a37b90444d066a42a03829e34dd1bbf46d408787c8f488d23d6c9e
+    digest: 9486f727c543038e6f1935863109e7cbb83f9c9e9a4a81f30d734dcf90944880
     icon: https://pandaria-catalog.oss-cn-hangzhou.aliyuncs.com/assets/logo/rancher-thanos.png
     keywords:
     - thanos
