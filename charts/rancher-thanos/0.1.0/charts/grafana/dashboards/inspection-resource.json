@@ -1324,7 +1324,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 120
+                "value": 158
               }
             ]
           }
@@ -1375,7 +1375,7 @@
           "editorMode": "code",
           "exemplar": false,
           "expr": " 1 - count(kube_persistentvolumeclaim_info{prometheus_from=~\"$cluster_id\"}) by (persistentvolumeclaim,prometheus_from) + count(kubelet_volume_stats_used_bytes{prometheus_from=~\"$cluster_id\"}) by (persistentvolumeclaim,prometheus_from)",
-          "format": "time_series",
+          "format": "table",
           "hide": false,
           "instant": true,
           "legendFormat": "__auto",
@@ -1390,7 +1390,7 @@
           "editorMode": "code",
           "exemplar": false,
           "expr": "sum(kubelet_volume_stats_used_bytes{prometheus_from=~\"$cluster_id\"}) by (persistentvolumeclaim,prometheus_from)",
-          "format": "time_series",
+          "format": "table",
           "hide": false,
           "instant": true,
           "legendFormat": "__auto",
@@ -1405,7 +1405,7 @@
           "editorMode": "code",
           "exemplar": false,
           "expr": "sum(kubelet_volume_stats_capacity_bytes{prometheus_from=~\"$cluster_id\"}) by (persistentvolumeclaim,prometheus_from)",
-          "format": "time_series",
+          "format": "table",
           "hide": false,
           "instant": true,
           "legendFormat": "__auto",
@@ -1420,7 +1420,7 @@
           "editorMode": "code",
           "exemplar": false,
           "expr": "sum(kubelet_volume_stats_available_bytes{prometheus_from=~\"$cluster_id\"}) by (persistentvolumeclaim,prometheus_from)",
-          "format": "time_series",
+          "format": "table",
           "hide": false,
           "instant": true,
           "legendFormat": "__auto",
@@ -1435,7 +1435,7 @@
           "editorMode": "code",
           "exemplar": false,
           "expr": "sum(kubelet_volume_stats_used_bytes{prometheus_from=~\"$cluster_id\"}) by (persistentvolumeclaim,prometheus_from) / sum(kubelet_volume_stats_capacity_bytes{prometheus_from=~\"$cluster_id\"}) by (persistentvolumeclaim,prometheus_from) * 100",
-          "format": "time_series",
+          "format": "table",
           "hide": false,
           "instant": true,
           "legendFormat": "__auto",
@@ -1485,8 +1485,8 @@
       {
         "current": {
           "selected": false,
-          "text": "test",
-          "value": "test"
+          "text": "rke1",
+          "value": "rke1"
         },
         "hide": 0,
         "label": "cluster",
@@ -1494,11 +1494,11 @@
         "options": [
           {
             "selected": true,
-            "text": "test",
-            "value": "test"
+            "text": "rke1",
+            "value": "rke1"
           }
         ],
-        "query": "test",
+        "query": "rke1",
         "skipUrlSync": false,
         "type": "textbox"
       }

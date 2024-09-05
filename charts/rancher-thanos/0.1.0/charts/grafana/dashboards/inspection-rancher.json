@@ -132,7 +132,7 @@
         "uid": "P6F3BD16D8874DFE6"
       },
       "gridPos": {
-        "h": 21,
+        "h": 29,
         "w": 13,
         "x": 11,
         "y": 0
@@ -208,7 +208,7 @@
         "uid": "P6F3BD16D8874DFE6"
       },
       "gridPos": {
-        "h": 8,
+        "h": 16,
         "w": 11,
         "x": 0,
         "y": 13
@@ -269,8 +269,8 @@
       {
         "current": {
           "selected": false,
-          "text": "https://192.168.2.155:8443",
-          "value": "https://192.168.2.155:8443"
+          "text": "",
+          "value": ""
         },
         "hide": 0,
         "label": "serverURL",
@@ -278,11 +278,11 @@
         "options": [
           {
             "selected": true,
-            "text": "https://192.168.2.155:8443",
-            "value": "https://192.168.2.155:8443"
+            "text": "",
+            "value": ""
           }
         ],
-        "query": "https://192.168.2.155:8443",
+        "query": "",
         "skipUrlSync": false,
         "type": "textbox"
       }
