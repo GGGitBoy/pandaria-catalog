@@ -10,7 +10,25 @@ entries:
       catalog.cattle.io/release-name: inspection-server
       catalog.cattle.io/type: cluster-tool
     apiVersion: v2
-    created: "2024-09-05T18:58:37.653335+08:00"
+    created: "2024-12-17T10:44:41.095661+08:00"
+    description: A Helm chart for fot inspection server
+    digest: a518318469d70fa0c9fdcd68c7c8124ae538f82ac5aa3386ed3a9d5d52943855
+    keywords:
+    - inspection
+    name: inspection-server
+    urls:
+    - assets/inspection-server/inspection-server-0.0.2.tgz
+    version: 0.0.2
+  - annotations:
+      catalog.cattle.io/display-name: Inspection Server
+      catalog.cattle.io/kube-version: '>= 1.20.0-0'
+      catalog.cattle.io/namespace: cattle-inspection-system
+      catalog.cattle.io/permits-os: linux,windows
+      catalog.cattle.io/rancher-version: '>= 2.6.0-0'
+      catalog.cattle.io/release-name: inspection-server
+      catalog.cattle.io/type: cluster-tool
+    apiVersion: v2
+    created: "2024-12-17T10:44:37.312515+08:00"
     description: A Helm chart for fot inspection server
     digest: 97af74a3d3b497211967e89c01d26c06c228b96c60d31fae08aa42d07626a6cc
     keywords:
@@ -1000,7 +1018,32 @@ entries:
       catalog.cattle.io/kube-version: '>= 1.20.0-0'
       catalog.cattle.io/rancher-version: '>= 2.6.0-0'
     apiVersion: v2
-    created: "2024-09-05T21:40:34.040134+08:00"
+    created: "2024-12-17T09:59:22.316175+08:00"
+    dependencies:
+    - condition: grafana.enabled
+      name: grafana
+      repository: file://./charts/grafana
+    - condition: thanos.enabled
+      name: thanos
+      repository: file://./charts/thanos
+    - condition: ui.enabled
+      name: ui
+      repository: file://./charts/ui
+    description: A Helm chart for Rancher v2 global monitoring
+    digest: 1b1c4d1a93a15353feb29b21439dff2baac3b4ef3faa9f8eefc3ca3fab5af367
+    icon: https://pandaria-catalog.oss-cn-hangzhou.aliyuncs.com/assets/logo/rancher-thanos.png
+    keywords:
+    - thanos
+    - prometheus
+    name: rancher-thanos
+    urls:
+    - assets/rancher-thanos/rancher-thanos-0.1.1.tgz
+    version: 0.1.1
+  - annotations:
+      catalog.cattle.io/kube-version: '>= 1.20.0-0'
+      catalog.cattle.io/rancher-version: '>= 2.6.0-0'
+    apiVersion: v2
+    created: "2024-12-17T10:44:37.384467+08:00"
     dependencies:
     - condition: grafana.enabled
       name: grafana

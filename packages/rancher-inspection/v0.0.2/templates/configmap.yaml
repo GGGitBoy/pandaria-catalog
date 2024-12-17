@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    chart: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+  name: inspection-agent-yaml
+data:
+{{ (.Files.Glob "agent/*.yaml").AsConfig | indent 2 }}

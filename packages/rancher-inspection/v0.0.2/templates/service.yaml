@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: access-inspection
+  labels:
+    chart: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    chart: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+  ports:
+  - name: server
+    port: {{ .Values.server.port }}
+    targetPort: {{ .Values.server.port }}
+  - name: ui
+    port: {{ .Values.ui.port }}
+    targetPort: {{ .Values.ui.port }}
