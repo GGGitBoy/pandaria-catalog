@@ -1,0 +1,13 @@
+diff --git a/packages/istio/1.24/charts/istiod/files/grpc-simple.yaml b/packages/istio/1.24/charts/istiod/files/grpc-simple.yaml
+index 9ba0c7a..dc8308f 100644
+--- a/packages/istio/1.24/charts/istiod/files/grpc-simple.yaml
++++ b/packages/istio/1.24/charts/istiod/files/grpc-simple.yaml
+@@ -4,7 +4,7 @@ metadata:
+ spec:
+   initContainers:
+     - name: grpc-bootstrap-init
+-      image: busybox:1.28
++      image: "{{ print (coalesce .Values.global.imageRegistry .Values.global.grpc_init.hub .Values.global.hub) "/" .Values.global.grpc_init.image ":" .Values.global.grpc_init.tag }}"
+       volumeMounts:
+         - mountPath: /var/lib/grpc/data/
+           name: grpc-io-proxyless-bootstrap

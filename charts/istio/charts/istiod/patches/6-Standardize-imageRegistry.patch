@@ -1,0 +1,109 @@
+diff --git a/packages/istio/1.24/charts/istiod/files/gateway-injection-template.yaml b/packages/istio/1.24/charts/istiod/files/gateway-injection-template.yaml
+index 385f177..d8e1f7c 100644
+--- a/packages/istio/1.24/charts/istiod/files/gateway-injection-template.yaml
++++ b/packages/istio/1.24/charts/istiod/files/gateway-injection-template.yaml
+@@ -22,8 +22,10 @@ spec:
+   {{- end }}
+   containers:
+   - name: istio-proxy
+-  {{- if contains "/" (annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image) }}
++  {{- if regexMatch "/.*:" (annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image) }}
+     image: "{{ annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image }}"
++  {{- else if and (coalesce .Values.global.imageRegistry .Values.global.proxy.hub .Values.global.hub) .Values.global.proxy.image (coalesce .Values.global.proxy.tag .Values.global.tag) }}
++    image: "{{ print (coalesce .Values.global.imageRegistry .Values.global.proxy.hub .Values.global.hub) "/" .Values.global.proxy.image ":" (coalesce .Values.global.proxy.tag .Values.global.tag) }}"
+   {{- else }}
+     image: "{{ .ProxyImage }}"
+   {{- end }}
+diff --git a/packages/istio/1.24/charts/istiod/files/grpc-agent.yaml b/packages/istio/1.24/charts/istiod/files/grpc-agent.yaml
+index 4117451..e8ac7ee 100644
+--- a/packages/istio/1.24/charts/istiod/files/grpc-agent.yaml
++++ b/packages/istio/1.24/charts/istiod/files/grpc-agent.yaml
+@@ -46,8 +46,10 @@ metadata:
+ spec:
+   containers:
+   - name: istio-proxy
+-  {{- if contains "/" (annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image) }}
++  {{- if regexMatch "/.*:" (annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image) }}
+     image: "{{ annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image }}"
++  {{- else if and (coalesce .Values.global.imageRegistry .Values.global.proxy.hub .Values.global.hub) .Values.global.proxy.image (coalesce .Values.global.proxy.tag .Values.global.tag) }}
++    image: "{{ print (coalesce .Values.global.imageRegistry .Values.global.proxy.hub .Values.global.hub) "/" .Values.global.proxy.image ":" (coalesce .Values.global.proxy.tag .Values.global.tag) }}"
+   {{- else }}
+     image: "{{ .ProxyImage }}"
+   {{- end }}
+diff --git a/packages/istio/1.24/charts/istiod/files/injection-template.yaml b/packages/istio/1.24/charts/istiod/files/injection-template.yaml
+index 168fae2..1583a26 100644
+--- a/packages/istio/1.24/charts/istiod/files/injection-template.yaml
++++ b/packages/istio/1.24/charts/istiod/files/injection-template.yaml
+@@ -75,8 +75,10 @@ spec:
+   {{ else -}}
+   - name: istio-init
+   {{ end -}}
+-  {{- if contains "/" (annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy_init.image) }}
++  {{- if regexMatch "/.*:" (annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy_init.image) }}
+     image: "{{ annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy_init.image }}"
++  {{- else if and (coalesce .Values.global.imageRegistry .Values.global.proxy_init.hub .Values.global.hub) .Values.global.proxy_init.image (coalesce .Values.global.proxy_init.tag .Values.global.tag) }}
++    image: "{{ print (coalesce .Values.global.imageRegistry .Values.global.proxy_init.hub .Values.global.hub) "/" .Values.global.proxy_init.image ":" (coalesce .Values.global.proxy_init.tag .Values.global.tag) }}"
+   {{- else }}
+     image: "{{ .ProxyImage }}"
+   {{- end }}
+@@ -191,8 +195,10 @@ spec:
+   containers:
+   {{ end }}
+   - name: istio-proxy
+-  {{- if contains "/" (annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image) }}
++  {{- if regexMatch "/.*:" (annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image) }}
+     image: "{{ annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image }}"
++  {{- else if and (coalesce .Values.global.imageRegistry .Values.global.proxy.hub .Values.global.hub) .Values.global.proxy.image (coalesce .Values.global.proxy.tag .Values.global.tag) }}
++    image: "{{ print (coalesce .Values.global.imageRegistry .Values.global.proxy.hub .Values.global.hub) "/" .Values.global.proxy.image ":" (coalesce .Values.global.proxy.tag .Values.global.tag) }}"
+   {{- else }}
+     image: "{{ .ProxyImage }}"
+   {{- end }}
+diff --git a/packages/istio/1.24/charts/istiod/files/kube-gateway.yaml b/packages/istio/1.24/charts/istiod/files/kube-gateway.yaml
+index bee9991..bbdc489 100644
+--- a/packages/istio/1.24/charts/istiod/files/kube-gateway.yaml
++++ b/packages/istio/1.24/charts/istiod/files/kube-gateway.yaml
+@@ -83,8 +83,10 @@ spec:
+       serviceAccountName: {{.ServiceAccount | quote}}
+       containers:
+       - name: istio-proxy
+-      {{- if contains "/" (annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image) }}
++      {{- if regexMatch "/.*:" (annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image) }}
+         image: "{{ annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image }}"
++      {{- else if and (coalesce .Values.global.imageRegistry .Values.global.proxy.hub .Values.global.hub) .Values.global.proxy.image (coalesce .Values.global.proxy.tag .Values.global.tag) }}
++        image: "{{ print (coalesce .Values.global.imageRegistry .Values.global.proxy.hub .Values.global.hub) "/" .Values.global.proxy.image ":" (coalesce .Values.global.proxy.tag .Values.global.tag) }}"
+       {{- else }}
+         image: "{{ .ProxyImage }}"
+       {{- end }}
+diff --git a/packages/istio/1.24/charts/istiod/files/waypoint.yaml b/packages/istio/1.24/charts/istiod/files/waypoint.yaml
+index 7fa28df..de0bf3b 100644
+--- a/packages/istio/1.24/charts/istiod/files/waypoint.yaml
++++ b/packages/istio/1.24/charts/istiod/files/waypoint.yaml
+@@ -82,8 +82,10 @@ spec:
+         - containerPort: 15090
+           protocol: TCP
+           name: http-envoy-prom
+-        {{- if contains "/" (annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image) }}
++        {{- if regexMatch "/.*:" (annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image) }}
+         image: "{{ annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image }}"
++        {{- else if and (coalesce .Values.global.imageRegistry .Values.global.proxy.hub .Values.global.hub) .Values.global.proxy.image (coalesce .Values.global.proxy.tag .Values.global.tag) }}
++        image: "{{ print (coalesce .Values.global.imageRegistry .Values.global.proxy.hub .Values.global.hub) "/" .Values.global.proxy.image ":" (coalesce .Values.global.proxy.tag .Values.global.tag) }}"
+         {{- else }}
+         image: "{{ .ProxyImage }}"
+         {{- end }}
+diff --git a/packages/istio/1.24/charts/istiod/templates/deployment.yaml b/packages/istio/1.24/charts/istiod/templates/deployment.yaml
+index ec68880..8cf2893 100644
+--- a/packages/istio/1.24/charts/istiod/templates/deployment.yaml
++++ b/packages/istio/1.24/charts/istiod/templates/deployment.yaml
+@@ -80,10 +80,10 @@ spec:
+ {{- end }}
+       containers:
+         - name: discovery
+-{{- if contains "/" .Values.image }}
++{{- if regexMatch "/.*:" .Values.image }}
+           image: "{{ .Values.image }}"
+ {{- else }}
+-          image: "{{ .Values.hub | default .Values.global.hub }}/{{ .Values.image | default "pilot" }}:{{ .Values.tag | default .Values.global.tag }}{{with (.Values.variant | default .Values.global.variant)}}-{{.}}{{end}}"
++          image: "{{ coalesce .Values.global.imageRegistry .Values.hub .Values.global.hub }}/{{ .Values.image | default "pilot" }}:{{ .Values.tag | default .Values.global.tag }}{{with (.Values.variant | default .Values.global.variant)}}-{{.}}{{end}}"
+ {{- end }}
+ {{- if .Values.global.imagePullPolicy }}
+           imagePullPolicy: {{ .Values.global.imagePullPolicy }}

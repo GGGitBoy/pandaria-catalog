@@ -1,0 +1,17 @@
+diff --git a/packages/istio/1.24/charts/cni/templates/daemonset.yaml b/packages/istio/1.24/charts/cni/templates/daemonset.yaml
+index 9b667c4..8500c02 100644
+--- a/packages/istio/1.24/charts/cni/templates/daemonset.yaml
++++ b/packages/istio/1.24/charts/cni/templates/daemonset.yaml
+@@ -68,10 +68,10 @@ spec:
+         # This container installs the Istio CNI binaries
+         # and CNI network config file on each node.
+         - name: install-cni
+-{{- if contains "/" .Values.image }}
++{{- if regexMatch "/.*:" .Values.image }}
+           image: "{{ .Values.image }}"
+ {{- else }}
+-          image: "{{ .Values.hub | default .Values.global.hub }}/{{ .Values.image | default "install-cni" }}:{{ template "istio-tag" . }}"
++          image: "{{ coalesce .Values.global.imageRegistry .Values.hub .Values.global.hub }}/{{ .Values.image | default "install-cni" }}:{{ template "istio-tag" . }}"
+ {{- end }}
+ {{- if or .Values.pullPolicy .Values.global.imagePullPolicy }}
+           imagePullPolicy: {{ .Values.pullPolicy | default .Values.global.imagePullPolicy }}

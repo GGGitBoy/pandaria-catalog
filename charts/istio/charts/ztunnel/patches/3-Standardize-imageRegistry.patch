@@ -1,0 +1,17 @@
+diff --git a/packages/istio/1.24/charts/ztunnel/templates/daemonset.yaml b/packages/istio/1.24/charts/ztunnel/templates/daemonset.yaml
+index fbab951..0857e91 100644
+--- a/packages/istio/1.24/charts/ztunnel/templates/daemonset.yaml
++++ b/packages/istio/1.24/charts/ztunnel/templates/daemonset.yaml
+@@ -54,10 +54,10 @@ spec:
+           operator: Exists
+       containers:
+       - name: istio-proxy
+-{{- if contains "/" .Values.image }}
++{{- if regexMatch "/.*:" .Values.image }}
+         image: "{{ .Values.image }}"
+ {{- else }}
+-        image: "{{ .Values.hub }}/{{ .Values.image | default "ztunnel" }}:{{ .Values.tag }}{{with (.Values.variant )}}-{{.}}{{end}}"
++        image: "{{ coalesce .Values.global.imageRegistry .Values.hub }}/{{ .Values.image | default "ztunnel" }}:{{ .Values.tag }}{{with (.Values.variant )}}-{{.}}{{end}}"
+ {{- end }}
+         ports:
+         - containerPort: 15020

@@ -1,0 +1,11 @@
+diff --git a/packages/istio/1.24/charts/istiod/templates/reader-clusterrolebinding.yaml b/packages/istio/1.24/charts/istiod/templates/reader-clusterrolebinding.yaml
+index 4f9925c..7316ecb 100644
+--- a/packages/istio/1.24/charts/istiod/templates/reader-clusterrolebinding.yaml
++++ b/packages/istio/1.24/charts/istiod/templates/reader-clusterrolebinding.yaml
+@@ -11,5 +11,5 @@ roleRef:
+   name: istio-reader-clusterrole{{- if not (eq .Values.revision "")}}-{{ .Values.revision }}{{- end }}-{{ .Release.Namespace }}
+ subjects:
+   - kind: ServiceAccount
+-    name: istio-reader-service-account
++    name: istio-reader-service-account{{- if not (eq .Values.revision "")}}-{{ .Values.revision }}{{- end }}
+     namespace: {{ .Values.global.istioNamespace }}

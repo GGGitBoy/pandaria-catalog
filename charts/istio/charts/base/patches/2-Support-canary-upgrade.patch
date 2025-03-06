@@ -1,0 +1,50 @@
+diff --git a/packages/istio/1.24/charts/base/templates/defaultrevision-validatingadmissionpolicy.yaml b/packages/istio/1.24/charts/base/templates/defaultrevision-validatingadmissionpolicy.yaml
+index 2376d99..39b474d 100644
+--- a/packages/istio/1.24/charts/base/templates/defaultrevision-validatingadmissionpolicy.yaml
++++ b/packages/istio/1.24/charts/base/templates/defaultrevision-validatingadmissionpolicy.yaml
+@@ -2,7 +2,7 @@
+ apiVersion: admissionregistration.k8s.io/v1
+ kind: ValidatingAdmissionPolicy
+ metadata:
+-  name: "stable-channel-default-policy.istio.io"
++  name: stable-channel-default-policy.istio.io{{- if not (eq .Values.defaultRevision "default")}}-{{ .Values.defaultRevision }}{{- end }}
+   labels:
+     release: {{ .Release.Name }}
+     istio: istiod
+@@ -44,8 +44,8 @@ spec:
+ apiVersion: admissionregistration.k8s.io/v1
+ kind: ValidatingAdmissionPolicyBinding
+ metadata:
+-  name: "stable-channel-default-policy-binding.istio.io"
++  name: stable-channel-default-policy-binding.istio.io{{- if not (eq .Values.defaultRevision "default")}}-{{ .Values.defaultRevision }}{{- end }}
+ spec:
+-  policyName: "stable-channel-default-policy.istio.io"
++  policyName: stable-channel-default-policy.istio.io{{- if not (eq .Values.defaultRevision "default")}}-{{ .Values.defaultRevision }}{{- end }}
+   validationActions: [Deny]
+ {{- end }}
+diff --git a/packages/istio/1.24/charts/base/templates/defaultrevision-validatingwebhookconfiguration.yaml b/packages/istio/1.24/charts/base/templates/defaultrevision-validatingwebhookconfiguration.yaml
+index 6842c4d..4502cff 100644
+--- a/packages/istio/1.24/charts/base/templates/defaultrevision-validatingwebhookconfiguration.yaml
++++ b/packages/istio/1.24/charts/base/templates/defaultrevision-validatingwebhookconfiguration.yaml
+@@ -2,7 +2,7 @@
+ apiVersion: admissionregistration.k8s.io/v1
+ kind: ValidatingWebhookConfiguration
+ metadata:
+-  name: istiod-default-validator
++  name: istiod-default-validator{{- if not (eq .Values.defaultRevision "default")}}-{{ .Values.defaultRevision }}{{- end }}
+   labels:
+     app: istiod
+     release: {{ .Release.Name }}
+diff --git a/packages/istio/1.24/charts/base/templates/reader-serviceaccount.yaml b/packages/istio/1.24/charts/base/templates/reader-serviceaccount.yaml
+index 19ce1b0..b80223d 100644
+--- a/packages/istio/1.24/charts/base/templates/reader-serviceaccount.yaml
++++ b/packages/istio/1.24/charts/base/templates/reader-serviceaccount.yaml
+@@ -15,7 +15,7 @@ imagePullSecrets:
+   {{- toYaml $imagePullSecrets | nindent 2 }}
+ {{- end }}
+ metadata:
+-  name: istio-reader-service-account
++  name: istio-reader-service-account{{- if not (eq .Values.defaultRevision "default")}}-{{ .Values.defaultRevision }}{{- end }}
+   namespace: {{ .Values.global.istioNamespace }}
+   labels:
+     app: istio-reader

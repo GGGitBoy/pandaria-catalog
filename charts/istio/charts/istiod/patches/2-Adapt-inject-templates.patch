@@ -1,0 +1,35 @@
+This patch adds pre-install hooks to ensure the injector config and related webhook
+are installed first. This resolves the race condition where chart's templates
+using injected configuration are installed before the webhook is in place.
+
+diff --git a/packages/istio/1.24/charts/istiod/templates/istiod-injector-configmap.yaml b/packages/istio/1.24/charts/istiod/templates/istiod-injector-configmap.yaml
+index b876917..9768ac7 100644
+--- a/packages/istio/1.24/charts/istiod/templates/istiod-injector-configmap.yaml
++++ b/packages/istio/1.24/charts/istiod/templates/istiod-injector-configmap.yaml
+@@ -11,6 +11,9 @@ metadata:
+     release: {{ .Release.Name }}
+     app.kubernetes.io/name: "istiod"
+     {{- include "istio.labels" . | nindent 4 }}
++  annotations:
++    helm.sh/hook: pre-install
++    helm.sh/hook-delete-policy: before-hook-creation
+ data:
+ {{/* Scope the values to just top level fields used in the template, to reduce the size. */}}
+   values: |-
+diff --git a/packages/istio/1.24/charts/istiod/templates/mutatingwebhook.yaml b/packages/istio/1.24/charts/istiod/templates/mutatingwebhook.yaml
+index c1428bf..4e0a8c3 100644
+--- a/packages/istio/1.24/charts/istiod/templates/mutatingwebhook.yaml
++++ b/packages/istio/1.24/charts/istiod/templates/mutatingwebhook.yaml
+@@ -53,8 +53,10 @@ metadata:
+     release: {{ .Release.Name }}
+     app.kubernetes.io/name: "istiod"
+     {{- include "istio.labels" . | nindent 4 }}
+-{{- if $.Values.sidecarInjectorWebhookAnnotations }}
+   annotations:
++    helm.sh/hook: pre-install
++    helm.sh/hook-delete-policy: before-hook-creation
++{{- if $.Values.sidecarInjectorWebhookAnnotations }}
+ {{ toYaml $.Values.sidecarInjectorWebhookAnnotations | indent 4 }}
+ {{- end }}
+ webhooks:
+ 

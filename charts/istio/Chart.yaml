@@ -1,0 +1,49 @@
+annotations:
+  helm.sh/images: |
+    - image: dp.apps.rancher.io/containers/install-cni:1.24.3
+      name: install-cni
+    - image: dp.apps.rancher.io/containers/pilot:1.24.3
+      name: pilot
+    - image: dp.apps.rancher.io/containers/proxyv2:1.24.3
+      name: proxyv2
+    - image: dp.apps.rancher.io/containers/ztunnel:1.24.3
+      name: ztunnel
+    - image: dp.apps.rancher.io/containers/bci-busybox:15.6
+      name: bci-busybox
+apiVersion: v2
+appVersion: 1.24.3
+dependencies:
+- condition: base.enabled
+  name: base
+  repository: ""
+  version: 1.x.x
+- condition: cni.enabled
+  name: cni
+  repository: ""
+  version: 1.x.x
+- condition: gateway.enabled
+  name: gateway
+  repository: ""
+  version: 1.x.x
+- condition: istiod.enabled
+  name: istiod
+  repository: ""
+  version: 1.x.x
+- condition: ztunnel.enabled
+  name: ztunnel
+  repository: ""
+  version: 1.x.x
+description: Istio is an open source service mesh that layers transparently onto existing
+  distributed applications. Istio’s powerful features provide a uniform and more efficient
+  way to secure, connect, and monitor services. Istio is the path to load balancing,
+  service-to-service authentication, and monitoring – with few or no service code
+  changes.
+home: https://apps.rancher.io/applications/istio
+icon: https://apps.rancher.io/logos/istio.png
+keywords:
+- istio
+maintainers:
+- name: SUSE LLC
+  url: https://www.suse.com/
+name: istio
+version: 0.6.3

@@ -1,0 +1,75 @@
+# Istio Helm Chart
+
+> [Istio](https://istio.io/) extends Kubernetes to establish a programmable, application-aware network. Working with both Kubernetes and
+traditional workloads, Istio brings standard, universal traffic management, telemetry, and security to complex deployments.
+
+## Introduction
+
+This Helm chart bootstraps an [Istio](https://istio.io/) deployment on a [Kubernetes](http://kubernetes.io) cluster using the
+[Helm](https://helm.sh) package manager.
+
+## Quick Start
+
+```console
+helm install my-release oci://dp.apps.rancher.io/charts/istio \
+    --set global.imagePullSecrets={application-collection} \
+    -n istio-system --create-namespace
+```
+
+### Prerequisites
+
+* Helm 3.8.0 or later.
+* Kubernetes 1.24 or later.
+* PV provisioner support in the underlying infrastructure.
+
+## Install Chart
+
+To install the Helm chart with the release name *my-release*:
+
+```console
+helm install my-release oci://dp.apps.rancher.io/charts/istio \
+    --set global.imagePullSecrets={application-collection} \
+    -n istio-system --create-namespace
+```
+
+This deploys the application to the Kubernetes cluster using the default configuration provided by the Helm chart, in the *istio-system*
+namespace.
+
+> NOTE: Follow [these steps](https://docs.apps.rancher.io/get-started/authentication/#kubernetes) to create the image pull secret named
+> *application-collection*, if you don't have it already.
+
+## Uninstall Chart
+
+To uninstall the Helm chart with the release name *my-release*:
+
+```console
+helm uninstall my-release -n istio-system
+```
+
+Due to Helm's [design](https://helm.sh/docs/chart_best_practices/custom_resource_definitions/#some-caveats-and-explanations),
+CustomResourceDefinitions (CRDs) are not removed when uninstalling the related chart. To do so, you will need to explicitly remove them:
+
+```console
+kubectl delete $(kubectl get CustomResourceDefinition -l='release=istio' -o name -A) -n istio-system
+```
+
+## Configuration
+
+To view support configuration options and documentation, run:
+
+```console
+helm show values oci://dp.apps.rancher.io/charts/istio
+```
+
+### Profiles
+
+The Istio Helm chart has a concept of a `profile`, which is a bundled collection of value presets.
+These can be set with `--set <subchart>.profile=<profile>`.
+For example, the `demo` profile offers a preset configuration to try out Istio in a test environment,
+with additional features enabled and lowered resource requirements.
+
+For consistency, the same profiles are used across each subchart, even if they do not impact a given chart.
+
+Explicitly set values have highest priority, then profile settings, then chart defaults.
+
+{{ template "chart.valuesSection" . }}
