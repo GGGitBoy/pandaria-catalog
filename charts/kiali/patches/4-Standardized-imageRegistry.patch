@@ -1,0 +1,17 @@
+diff --git a/packages/kiali/2/templates/deployment.yaml b/packages/kiali/2/templates/deployment.yaml
+index b1844a4..ea187b5 100644
+--- a/packages/kiali/2/templates/deployment.yaml
++++ b/packages/kiali/2/templates/deployment.yaml
+@@ -71,7 +71,11 @@ spec:
+       {{- end }}
+       {{- end }}
+       containers:
+-      - image: "{{ .Values.deployment.image_name }}{{ if .Values.deployment.image_digest }}@{{ .Values.deployment.image_digest }}{{ end }}:{{ .Values.deployment.image_version }}"
++      {{- if .Values.deployment.image_digest }}
++      - image: "{{ with (coalesce .Values.global.imageRegistry .Values.deployment.image_registry) }}{{ . }}/{{ end }}{{ .Values.deployment.image_name }}@{{ .Values.deployment.image_digest }}"
++      {{- else }}
++      - image: "{{ with (coalesce .Values.global.imageRegistry .Values.deployment.image_registry) }}{{ . }}/{{ end }}{{ .Values.deployment.image_name }}:{{ .Values.deployment.image_version }}"
++      {{- end }}
+         imagePullPolicy: {{ .Values.deployment.image_pull_policy | default "Always" }}
+         name: {{ include "kiali-server.fullname" . }}
+         command:

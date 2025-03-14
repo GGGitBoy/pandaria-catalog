@@ -1,0 +1,19 @@
+annotations:
+  helm.sh/images: |
+    - image: dp.apps.rancher.io/containers/kiali:2.5.0
+      name: kiali
+apiVersion: v2
+appVersion: 2.5.0
+description: Kiali is a management console for Istio service mesh. Kiali can be quickly
+  installed as an Istio add-on or integrated as a trusted component within a production
+  environment.
+home: https://apps.rancher.io/applications/kiali
+icon: https://apps.rancher.io/logos/kiali.png
+keywords:
+- istio
+- kiali
+maintainers:
+- name: SUSE LLC
+  url: https://www.suse.com/
+name: kiali
+version: 2.5.0
