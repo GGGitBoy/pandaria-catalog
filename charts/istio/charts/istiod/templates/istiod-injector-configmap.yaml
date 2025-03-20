@@ -17,7 +17,19 @@ metadata:
 data:
 {{/* Scope the values to just top level fields used in the template, to reduce the size. */}}
   values: |-
+{{/* The injector source code expect "imagePullSecrets" to be a list of strings. */}}
+{{- $imagePullSecrets := list }}
+{{- with .Values.global.imagePullSecrets }}
+  {{- range . }}
+      {{- if kindIs "map" . }}
+          {{- $imagePullSecrets = append $imagePullSecrets (get . "name") }}
+      {{- else }}
+          {{- $imagePullSecrets = append $imagePullSecrets . }}
+      {{- end }}
+  {{- end }}
+{{- end }}
 {{ $vals := pick .Values "global" "sidecarInjectorWebhook" "revision" -}}
+{{ $vals = set $vals.global "imagePullSecrets" $imagePullSecrets -}}
 {{ $pilotVals := pick .Values "cni" -}}
 {{ $vals = set $vals "pilot" $pilotVals -}}
 {{ $gatewayVals := pick .Values.gateways "securityContext" "seccompProfile" -}}
