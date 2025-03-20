@@ -2,7 +2,7 @@
 # For instance, instead of `--set _internal_defaults_do_not_set.foo=bar``, just set `--set foo=bar`.
 _internal_defaults_do_not_set:
   hub: "dp.apps.rancher.io"
-  tag: "1.24.3"
+  tag: "1.24.2"
   variant: ""
   image: containers/install-cni
   pullPolicy: ""
@@ -92,7 +92,7 @@ _internal_defaults_do_not_set:
     # Dev builds from prow are on gcr.io
     hub: dp.apps.rancher.io
     # Default tag for Istio images.
-    tag: 1.24.3
+    tag: 1.24.2
     # Variant of the image to use.
     # Currently supported are: [debug, distroless]
     variant: ""

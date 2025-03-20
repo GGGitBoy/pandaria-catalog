@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: 1.24.3
+appVersion: 1.24.2
 description: Helm chart for deploying Istio cluster resources and CRDs
 home: https://apps.rancher.io/applications/istio
 icon: https://apps.rancher.io/logos/istio.png
@@ -9,4 +9,4 @@ maintainers:
 - name: SUSE LLC
   url: https://www.suse.com/
 name: base
-version: 1.24.3
+version: 1.24.2

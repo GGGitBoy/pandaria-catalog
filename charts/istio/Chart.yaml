@@ -1,17 +1,17 @@
 annotations:
   helm.sh/images: |
-    - image: dp.apps.rancher.io/containers/install-cni:1.24.3
+    - image: dp.apps.rancher.io/containers/install-cni:1.24.2
       name: install-cni
-    - image: dp.apps.rancher.io/containers/pilot:1.24.3
+    - image: dp.apps.rancher.io/containers/pilot:1.24.2
       name: pilot
-    - image: dp.apps.rancher.io/containers/proxyv2:1.24.3
+    - image: dp.apps.rancher.io/containers/proxyv2:1.24.2
       name: proxyv2
-    - image: dp.apps.rancher.io/containers/ztunnel:1.24.3
+    - image: dp.apps.rancher.io/containers/ztunnel:1.24.2
       name: ztunnel
     - image: dp.apps.rancher.io/containers/bci-busybox:15.6
       name: bci-busybox
 apiVersion: v2
-appVersion: 1.24.3
+appVersion: 1.24.2
 dependencies:
 - condition: base.enabled
   name: base
@@ -46,4 +46,4 @@ maintainers:
 - name: SUSE LLC
   url: https://www.suse.com/
 name: istio
-version: 0.6.3
+version: 0.6.2

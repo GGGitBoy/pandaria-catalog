@@ -27,7 +27,7 @@ metadata:
     {{- .Values.annotations | toYaml | nindent 4 }}
 {{- end }}
 ---
-{{- if (eq (.Values.platform | default "") "openshift") }}
+{{- if (eq .Values.platform "openshift") }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:

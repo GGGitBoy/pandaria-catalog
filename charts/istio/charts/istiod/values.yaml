@@ -9,7 +9,7 @@ _internal_defaults_do_not_set:
   rollingMaxSurge: 100%
   rollingMaxUnavailable: 25%
   hub: "dp.apps.rancher.io"
-  tag: "1.24.3"
+  tag: "1.24.2"
   variant: ""
   # Can be a full hub/image:tag
   image: containers/pilot
@@ -204,7 +204,7 @@ _internal_defaults_do_not_set:
     # Dev builds from prow are on gcr.io
     hub: dp.apps.rancher.io
     # Default tag for Istio images.
-    tag: 1.24.3
+    tag: 1.24.2
     # Variant of the image to use.
     # Currently supported are: [debug, distroless]
     variant: ""
@@ -318,7 +318,7 @@ _internal_defaults_do_not_set:
       # If using stackdriver tracer outside GCP, set env GOOGLE_APPLICATION_CREDENTIALS to the GCP credential file.
       tracer: "none"
       hub: dp.apps.rancher.io
-      tag: 1.24.3
+      tag: 1.24.2
     proxy_init:
       # Base name for the proxy_init container, used to configure iptables.
       image: containers/proxyv2
@@ -326,7 +326,7 @@ _internal_defaults_do_not_set:
       # Do not use unless you need to work around an issue of the idempotency handling. This flag will be removed in future releases.
       forceApplyIptables: false
       hub: dp.apps.rancher.io
-      tag: 1.24.3
+      tag: 1.24.2
     # configure remote pilot and istiod service and endpoint
     remotePilotAddress: ""
     ##############################################################################################

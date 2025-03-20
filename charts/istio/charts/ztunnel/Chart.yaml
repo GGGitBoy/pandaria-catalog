@@ -1,9 +1,9 @@
 annotations:
   helm.sh/images: |
-    - image: dp.apps.rancher.io/containers/ztunnel:1.24.3
+    - image: dp.apps.rancher.io/containers/ztunnel:1.24.2
       name: ztunnel
 apiVersion: v2
-appVersion: 1.24.3
+appVersion: 1.24.2
 description: Helm chart for istio ztunnel components
 icon: https://apps.rancher.io/logos/istio.png
 keywords:
@@ -13,4 +13,4 @@ maintainers:
 - name: SUSE LLC
   url: https://www.suse.com/
 name: ztunnel
-version: 1.24.3
+version: 1.24.2
