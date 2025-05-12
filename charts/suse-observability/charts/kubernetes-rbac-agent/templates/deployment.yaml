@@ -1,0 +1,122 @@
+{{- $containerConfig := dict "ContainerConfig" .Values.containers.rbacAgent -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: kubernetes-rbac-agent
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ include "kubernetes-rbac-agent.app.name" . }}
+    app: "{{ include "kubernetes-rbac-agent.app.name" . }}"
+    {{- include "kubernetes-rbac-agent.global.extraLabels" . | nindent 4 }}
+  annotations:
+    {{- include "kubernetes-rbac-agent.global.extraAnnotations" . | nindent 4 }}
+  name: "{{ include "kubernetes-rbac-agent.app.name" . }}"
+spec:
+  replicas: 1
+  # Avoid duplicate instances, getting data from multiple agents will confuse the rbac sync.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: "{{ include "kubernetes-rbac-agent.app.name" . }}"
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: kubernetes-rbac-agent
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/name: {{ include "kubernetes-rbac-agent.app.name" . }}
+        app: "{{ include "kubernetes-rbac-agent.app.name" . }}"
+        {{- include "kubernetes-rbac-agent.global.extraLabels" . | nindent 8 }}
+        {{- with .Values.containers.rbacAgent.podLabels }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      annotations:
+        {{- include "kubernetes-rbac-agent.global.extraAnnotations" . | nindent 8 }}
+        {{- with .Values.containers.rbacAgent.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      name: "{{ include "kubernetes-rbac-agent.app.name" . }}"
+    spec:
+      serviceAccountName: "{{ include "kubernetes-rbac-agent.serviceaccount.name" . }}"
+
+      {{- include "kubernetes-rbac-agent.image.pullSecrets" . | nindent 6 }}
+
+      containers:
+        - image: "{{ include "kubernetes-rbac-agent.image.registry" (merge $containerConfig .) }}/{{ .Values.containers.rbacAgent.image.repository }}:{{ .Values.containers.rbacAgent.image.tag }}"
+          imagePullPolicy: {{ .Values.containers.rbacAgent.image.pullPolicy }}
+          name: kubernetes-rbac-agent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: STS_NAMESPACE
+              value: {{ .Release.Namespace | quote }}
+            {{- if not (or .Values.global.apiKey.fromSecret .Values.apiKey) }}
+            - name: STS_K8S_SERVICE_ACCOUNT
+              value: "true"
+            {{- end }}
+            {{- range $key, $value := .Values.containers.rbacAgent.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- if eq .Values.roleType "instance" }}
+            - name: "STS_ROLE_TYPE"
+              value: "instance"
+            # No features check for the instance roles, because it gets deployed with the platform. Should be covered by helm.
+            - name: "STS_SKIP_FEATURES"
+              value: "true"
+            {{- else if eq .Values.roleType "scope" }}
+            - name: "STS_ROLE_TYPE"
+              value: "scope"
+            {{- else }}
+              fail "roleType should be 'instance' or 'scope' value"
+            {{- end }}
+            {{- if .Values.global.proxy.url }}
+            - name: "STS_PROXY"
+              value: "{{ .Values.global.proxy.url }}"
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "kubernetes-rbac-agent.url.configmap.name" .  }}
+            - configMapRef:
+                name: {{ include "kubernetes-rbac-agent.clusterName.configmap.name" .  }}
+          {{- if or .Values.global.apiKey.fromSecret .Values.apiKey }}
+            - secretRef:
+                name: {{ include "kubernetes-rbac-agent.api-key.secret.name" .  }}
+          {{- end }}
+          command: [ "/usr/bin/kubernetes-rbac-agent" ]
+          args:
+            - start
+          livenessProbe:
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            httpGet:
+              path: /healthz
+              port: 8080
+      {{- if .Values.containers.rbacAgent.nodeSelector }}
+      nodeSelector:
+      {{- with .Values.containers.rbacAgent.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- end }}
+      {{- if .Values.containers.rbacAgent.affinity }}
+      affinity:
+      {{- with .Values.containers.rbacAgent.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- end }}
+      {{- if .Values.containers.rbacAgent.tolerations }}
+      tolerations:
+      {{- with .Values.containers.rbacAgent.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- end }}
+      {{- if .Values.containers.rbacAgent.priorityClassName }}
+      priorityClassName: "{{ .Values.containers.rbacAgent.priorityClassName }}"
+      {{- end }}
+
+      {{- if .Values.containers.rbacAgent.securityContext.enabled }}
+      securityContext: {{- omit .Values.containers.rbacAgent.securityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}

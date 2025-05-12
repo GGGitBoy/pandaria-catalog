@@ -1,0 +1,14 @@
+{{- if .Values.esConfig }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "elasticsearch.uname" . }}-config
+  labels:
+    {{- include "elasticsearch.labels.recommended" . | nindent 4 }}
+    {{- include "elasticsearch.labels.common" . | nindent 4 }}
+data:
+{{- range $path, $config := .Values.esConfig }}
+  {{ $path }}: |
+{{ $config | indent 4 -}}
+{{- end -}}
+{{- end -}}

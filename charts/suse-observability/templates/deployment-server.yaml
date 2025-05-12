@@ -1,0 +1,195 @@
+{{- define "stackstate.server.deployment.container.init" -}}
+name: server-init
+command:
+- sh
+- -c
+- |
+  /entrypoint -c {{ include "stackstate.initializer.prerequisites" . }} -t 300
+image: "{{include "stackstate.wait.image.registry" .}}/{{ .Values.stackstate.components.wait.image.repository }}:{{ .Values.stackstate.components.wait.image.tag }}"
+imagePullPolicy: {{ .Values.stackstate.components.wait.image.pullPolicy | quote }}
+{{- end -}}
+
+{{- define "stackstate.server.deployment.container.main" -}}
+args:
+{{- include "stackstate.service.args" . }}
+- -start
+envFrom:
+  - secretRef:
+      name: {{ include "stackstate.secret.name.license" .  }}
+  - secretRef:
+      name: {{ include "stackstate.secret.name.apiKey" .  }}
+  - secretRef:
+      name: {{ include "stackstate.secret.name.auth" .  }}
+  {{- if .Values.stackstate.email.enabled }}
+  - secretRef:
+      name: {{ include "stackstate.secret.name.email" .  }}
+  {{- end }}
+env:
+{{- $serviceConfig := dict "ServiceName" "server" "ServiceConfig" .Values.stackstate.components.server }}
+{{- $imageTagConfig := dict "ImageTag" .Values.stackstate.components.server.image.tag }}
+{{- include "stackstate.service.envvars" (merge $serviceConfig .) }}
+{{- include "stackstate.baseurls.envvars" . }}
+{{- include "stackstate.metricstore.envvar" . }}
+{{ if .Values.stackstate.components.api.yaml.maxSizeLimit }}
+- name: CONFIG_FORCE_stackstate_yaml_codePointLimit
+  value: "{{ include "stackstate.server.yaml.maxSizeLimit" . }}"
+{{ end }}
+- name: ELASTICSEARCH_URI
+  value: "http://{{ include "stackstate.es.endpoint" . }}"
+- name: KAFKA_BROKERS
+  value: {{ include "stackstate.kafka.endpoint" . | quote }}
+- name: PROMETHEUS_WRITE_ENDPOINT
+  value: http://{{ include "stackstate.vmagent.endpoint" . }}:8429/api/v1/write
+- name: HADOOP_USER_NAME
+  value: nobody
+- name: ZOOKEEPER_QUORUM
+  value: {{ include "stackgraph.zookeeper.endpoint" . | quote }}
+{{ if .Values.stackstate.experimental.k8sAuthorization }}
+- name: CONFIG_FORCE_stackstate_featureSwitches_authorizationSyncService
+  value: "true"
+{{ end }}
+{{- include "stackstate.component.envsFromExistingSecrets" .Values.stackstate.components.all.envsFromExistingSecrets }}
+{{- include "stackstate.component.envsFromExistingSecrets" .Values.stackstate.components.server.envsFromExistingSecrets }}
+image: "{{ include "stackstate.image.registry" (merge $serviceConfig .) }}/{{ .Values.stackstate.components.server.image.repository }}{{ .Values.stackstate.components.all.image.repositorySuffix }}:{{ include "stackstate.server.image.tag" (merge $imageTagConfig .) }}"
+imagePullPolicy: {{ default .Values.stackstate.components.all.image.pullPolicy .Values.stackstate.components.server.image.pullPolicy | quote }}
+livenessProbe:
+  httpGet:
+    path: /liveness
+    port: health
+  initialDelaySeconds: 60
+  timeoutSeconds: 5
+name: server
+ports:
+- containerPort: 1618
+  name: health
+- containerPort: 7070
+  name: api
+{{- if .Values.stackstate.instanceDebugApi.enabled }}
+- containerPort: 7080
+  name: instance
+{{- end }}
+{{- if .Values.stackstate.experimental.k8sAuthorization }}
+- containerPort: 7075
+  name: authz-api
+{{- end }}
+{{- if .Values.stackstate.components.all.metrics.enabled }}
+- containerPort: 9404
+  name: metrics
+{{- end }}
+readinessProbe:
+  httpGet:
+    path: /readiness
+    port: health
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+{{- with .Values.stackstate.components.server.resources }}
+resources:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+volumeMounts:
+{{- if eq .Values.stackstate.stackpacks.source "docker-image" }}
+{{ include "stackstate.stackpacks.volumeMount" . }}
+{{- end }}
+{{- if eq .Values.hbase.deployment.mode "Mono" }}
+{{ include "stackstate.stackpacks.local.volumeMount" . }}
+{{- end }}
+{{- include "stackstate.service.container.volumes" . }}
+{{- end -}}
+
+{{- define "stackstate.server.deployment" -}}
+{{- $commonContainer := fromYaml (include "common.container" .) -}}
+{{- $overrideContainer := fromYaml (include "stackstate.server.deployment.container.main" .) -}}
+{{- $stsstackstateServerMainContainer := (merge $overrideContainer $commonContainer) -}}
+{{- $overrideContainer := fromYaml (include "stackstate.server.deployment.container.init" .) -}}
+{{- $stsstackstateServerInitContainer := (merge $overrideContainer $commonContainer) -}}
+{{- $overrideContainer := fromYaml (include "stackstate.initContainer.ensure.no.server.statefulset.pods.are.running" .) -}}
+{{- $stsStackstateServerEnsureNoServerStatefulSetPodsAreRunningContainer := (merge $overrideContainer $commonContainer) -}}
+
+metadata:
+  name: {{ template "common.fullname.short" . }}-server
+  labels:
+    app.kubernetes.io/component: server
+    stackstate.com/connects-to-stackgraph: "true"
+    stackstate.com/replicas: "1"
+spec:
+  replicas: {{ .Values.stackstate.components.server.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: server
+  strategy:
+{{- if eq (lower .Values.stackstate.components.all.deploymentStrategy.type) "recreatesingletonsonly" }}
+    type: Recreate
+{{- else }}
+    {{- toYaml .Values.stackstate.components.all.deploymentStrategy | nindent 4 }}
+{{- end }}
+  template:
+    metadata:
+      annotations:
+        {{- include "common.metrics.annotations" (dict "metrics" .Values.stackstate.components.all.metrics "port" "9404" "container_name" "server" "filter" .Values.stackstate.components.server.agentMetricsFilter) | indent 8 }}
+        {{- include "stackstate.common.secret.checksum" . | nindent 8 }}
+        {{- include "stackstate.license.secret.checksum" . | nindent 8 }}
+        {{- include "stackstate.apiKey.secret.checksum" . | nindent 8 }}
+        {{- include "stackstate.auth.secret.checksum" . | nindent 8 }}
+        {{- include "stackstate.email.secret.checksum" . | nindent 8 }}
+        {{- include "stackstate.server.secret.checksum" . | nindent 8 }}
+        {{- include "stackstate.server.configmap.checksum" . | nindent 8 }}
+        {{- include "stackstate.component.podExtraAnnotations" (merge (dict "Name" "server") .) }}
+      labels:
+        app.kubernetes.io/component: server
+        stackstate.com/connects-to-stackgraph: "true"
+    spec:
+      serviceAccountName: {{ template "common.fullname.short" . }}-server
+      {{- include "stackstate.image.pullSecret.name" (dict "context" $) | nindent 6 }}
+      initContainers:
+      {{- if eq .Values.stackstate.stackpacks.source "docker-image" }}
+      - {{ include "stackstate.initContainer.stackpacks" . | nindent 8 }}
+      {{- end }}
+      - {{ toYaml $stsstackstateServerInitContainer | nindent 8 }}
+      - {{ toYaml $stsStackstateServerEnsureNoServerStatefulSetPodsAreRunningContainer | nindent 8 }}
+      containers:
+      - {{ toYaml $stsstackstateServerMainContainer | nindent 8 }}
+    {{- if or .Values.stackstate.components.all.nodeSelector .Values.stackstate.components.server.nodeSelector }}
+      nodeSelector:
+      {{- with .Values.stackstate.components.all.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.stackstate.components.server.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+    {{- if or .Values.stackstate.components.all.affinity .Values.stackstate.components.server.affinity }}
+      affinity:
+      {{- with .Values.stackstate.components.all.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.stackstate.components.server.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+    {{- if or .Values.stackstate.components.all.tolerations .Values.stackstate.components.server.tolerations }}
+      tolerations:
+      {{- with .Values.stackstate.components.all.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.stackstate.components.server.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.stackstate.components.all.securityContext.enabled }}
+      securityContext: {{- omit .Values.stackstate.components.all.securityContext "enabled" | toYaml | nindent 8 }}
+    {{- end }}
+      volumes:
+      {{- include "stackstate.service.pod.volumes" (dict "pod_name" "server" "root" . ) | nindent 6 }}
+      {{- if eq .Values.stackstate.stackpacks.source "docker-image" }}
+      {{ include "stackstate.stackpacks.volume" . | nindent 6 }}
+      {{- end }}
+      {{- if eq .Values.hbase.deployment.mode "Mono" }}
+      {{ include "stackstate.stackpacks.local.volume" . | nindent 6 }}
+      {{- end }}
+{{- end -}}
+
+{{- if not .Values.stackstate.experimental.server.split }}
+{{- $commonDeployment := fromYaml (include "common.deployment" .) -}}
+{{- $serverDeployment := fromYaml (include "stackstate.server.deployment" .) -}}
+{{- toYaml (merge $serverDeployment $commonDeployment) -}}
+{{- end }}

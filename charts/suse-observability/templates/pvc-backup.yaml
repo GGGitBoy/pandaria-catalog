@@ -1,0 +1,29 @@
+{{- if and .Values.backup.enabled .Values.backup.stackGraph.scheduled.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "common.fullname.short" . }}-backup-stackgraph-tmp-data
+spec:
+  accessModes: {{ .Values.backup.stackGraph.scheduled.tempData.accessModes }}
+  resources:
+    requests:
+      {{- if eq .Values.hbase.deployment.mode "Distributed" }}
+      storage: {{ .Values.backup.stackGraph.scheduled.tempData.size | default .Values.hbase.hdfs.datanode.persistence.size }}
+      {{- else}}
+      storage: {{ .Values.backup.stackGraph.scheduled.tempData.size | default .Values.hbase.stackgraph.persistence.size }}
+      {{- end }}
+  {{ include "common.storage.class" ( dict "persistence" .Values.backup.stackGraph.scheduled.tempData "global" .Values.global) | nindent 2 }}
+{{- end }}
+---
+{{- if .Values.backup.configuration.scheduled.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "common.fullname.short" . }}-settings-backup-data
+spec:
+  accessModes: {{ .Values.backup.stackGraph.scheduled.tempData.accessModes }}
+  resources:
+    requests:
+      storage: {{ tpl .Values.backup.configuration.scheduled.pvc.size . }}
+  {{ include "common.storage.class" ( dict "persistence" .Values.backup.configuration.scheduled.pvc "global" .Values.global) | nindent 2 }}
+{{- end }}

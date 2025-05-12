@@ -1,0 +1,37 @@
+{{- define "common.container" -}}
+{{- $common := dict "Values" .Values.common -}}
+{{- $noCommon := omit .Values "common" -}}
+{{- $overrides := dict "Values" $noCommon -}}
+{{- $noValues := omit . "Values" -}}
+{{- with merge $noValues $overrides $common -}}
+env:
+  {{ include "common.extraenv.container" . | nindent 2 }}
+name: {{ .Chart.Name }}
+image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+imagePullPolicy: {{ .Values.image.pullPolicy }}
+{{- if .Values.container.livenessProbeDefaults.enabled }}
+livenessProbe:
+  failureThreshold: {{ .Values.container.livenessProbeDefaults.failureThreshold }}
+  initialDelaySeconds: {{ .Values.container.livenessProbeDefaults.initialDelaySeconds }}
+  periodSeconds: {{ .Values.container.livenessProbeDefaults.periodSeconds }}
+  successThreshold: {{ .Values.container.livenessProbeDefaults.successThreshold }}
+  timeoutSeconds: {{ .Values.container.livenessProbeDefaults.timeoutSeconds }}
+{{- end }}
+{{- if .Values.container.readinessProbeDefaults.enabled }}
+readinessProbe:
+  failureThreshold: {{ .Values.container.readinessProbeDefaults.failureThreshold }}
+  initialDelaySeconds: {{ .Values.container.readinessProbeDefaults.initialDelaySeconds }}
+  periodSeconds: {{ .Values.container.readinessProbeDefaults.periodSeconds }}
+  successThreshold: {{ .Values.container.readinessProbeDefaults.successThreshold }}
+  timeoutSeconds: {{ .Values.container.readinessProbeDefaults.timeoutSeconds }}
+{{- end }}
+{{- with .Values.container.resources }}
+resources:
+  {{- toYaml . | nindent 2 }}
+{{- end -}}
+{{- with .Values.container.securityContext }}
+securityContext:
+  {{- toYaml . | nindent 2 }}
+{{- end -}}
+{{- end -}}
+{{- end -}}

@@ -1,0 +1,6 @@
+dependencies:
+- name: victoria-metrics-common
+  repository: https://victoriametrics.github.io/helm-charts
+  version: 0.0.41
+digest: sha256:a68dc658bbba632a742d48a6919f75f168487a8dacb058c1764f895f3e54c624
+generated: "2025-03-03T09:32:20.115759123+01:00"

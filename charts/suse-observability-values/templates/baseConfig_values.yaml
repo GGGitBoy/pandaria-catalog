@@ -1,0 +1,16 @@
+---
+# Source: suse-observability-values/templates/baseConfig_values.yaml
+global:
+  imageRegistry: "registry.rancher.com"
+
+stackstate:
+  baseUrl: "https://observability.internal.mycompany.com"
+  authentication:
+    adminPassword: "$2a$10$2GBv4rZidbKllD5Z.NXhMOoxT6S7iiMwkUZtIToDYvIvoWzswptUu"
+  apiKey:
+    key: "Bp5xNGLsAqSznQn830zIMB0AcUDY22K7"
+  license:
+    key: "INTERNAL-USE-ONLY-39a4-87f8"
+---
+# Source: suse-observability-values/templates/baseConfig_values.yaml
+# Your SUSE Observability admin password is: S1eEJSutB9YrRYrV

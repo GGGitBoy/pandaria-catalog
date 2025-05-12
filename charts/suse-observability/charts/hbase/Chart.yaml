@@ -1,0 +1,27 @@
+apiVersion: v2
+appVersion: 1.2.12
+dependencies:
+- name: common
+  repository: file://../common/
+  version: '*'
+- condition: zookeeper.enabled
+  name: zookeeper
+  repository: https://raw.githubusercontent.com/bitnami/charts/eb5f9a9513d987b519f0ecd732e7031241c50328/bitnami
+  version: 8.1.2
+description: Helm chart for StackState HBase -- includes Zookeeper, and Hadoop for
+  persistent storage.
+home: https://gitlab.com/stackvista/devops/helm-charts.git
+icon: https://www.stackstate.com/wp-content/uploads/2019/02/152x152-favicon.png
+keywords:
+- aiops
+- monitoring
+- stackstate
+- hbase
+- hadoop
+maintainers:
+- email: ops@stackstate.com
+  name: Stackstate Ops Team
+name: hbase
+sources:
+- https://github.com/apache/hadoop
+version: 0.2.57

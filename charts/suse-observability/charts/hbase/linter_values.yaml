@@ -1,0 +1,19 @@
+hbase:
+  master:
+    metrics:
+      servicemonitor:
+        enabled: true
+  regionserver:
+    metrics:
+      servicemonitor:
+        enabled: true
+hdfs:
+  secondarynamenode:
+    enabled: true
+tephra:
+  metrics:
+    servicemonitor:
+      enabled: true
+all:
+  metrics:
+    enabled: true

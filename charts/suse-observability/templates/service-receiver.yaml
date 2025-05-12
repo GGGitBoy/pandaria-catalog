@@ -1,0 +1,45 @@
+{{- define "stackstate.receiver.name.postfix" -}}
+  {{- if .ReceiverType }}-{{ .ReceiverType }}{{ else }}{{ end }}
+{{- end -}}
+
+{{- define "stackstate.receiver.service" -}}
+metadata:
+  name: {{ template "common.fullname.short" . }}-receiver{{ template "stackstate.receiver.name.postfix" .  }}
+  labels:
+    app.kubernetes.io/component: receiver{{ template "stackstate.receiver.name.postfix" .  }}
+    app.kubernetes.io/component-group: receiver
+spec:
+  ports:
+    - name: receiver
+      port: 7077
+      protocol: TCP
+      targetPort: receiver
+  {{- if .Values.stackstate.components.all.metrics.enabled }}
+    - name: metrics
+      port: 9404
+      protocol: TCP
+      targetPort: metrics
+  {{- end }}
+  selector:
+    app.kubernetes.io/component: receiver{{ template "stackstate.receiver.name.postfix" .  }}
+{{- end -}}
+
+{{- $commonService := fromYaml (include "common.service" .) -}}
+
+{{- if .Values.stackstate.components.receiver.split.enabled }}
+{{- $receiverBaseArgs := merge (dict "ReceiverType" "base") . -}}
+{{- $stackstateReceiverBaseService := fromYaml (include "stackstate.receiver.service" $receiverBaseArgs) -}}
+{{- toYaml (merge $stackstateReceiverBaseService $commonService) }}
+---
+{{- $receiverLogsArgs := merge (dict "ReceiverType" "logs") . -}}
+{{- $stackstateReceiverLogsService := fromYaml (include "stackstate.receiver.service" $receiverLogsArgs) -}}
+{{ toYaml (merge $stackstateReceiverLogsService $commonService) }}
+---
+{{- $receiverProcessAgentArgs := merge (dict "ReceiverType" "process-agent") . -}}
+{{- $stackstateReceiverProcessAgentService := fromYaml (include "stackstate.receiver.service" $receiverProcessAgentArgs) -}}
+{{ toYaml (merge $stackstateReceiverProcessAgentService $commonService) -}}
+{{ else }}
+{{- $receiverArgs := merge (dict "ReceiverType" "") . -}}
+{{- $stackstateReceiverService := fromYaml (include "stackstate.receiver.service" $receiverArgs) -}}
+{{- toYaml (merge $stackstateReceiverService $commonService) }}
+{{- end -}}

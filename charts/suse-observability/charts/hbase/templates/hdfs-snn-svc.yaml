@@ -1,0 +1,26 @@
+{{- define "hbase.hdfs.secondarynamenode.service" -}}
+metadata:
+  name: {{ template "common.fullname.short" . }}-hdfs-snn
+  labels:
+    app.kubernetes.io/component: hdfs-snn
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+  - port: 50090
+    name: snn
+{{- if .Values.all.metrics.enabled }}
+  - port: 9404
+    name: metrics
+{{- end }}
+  selector:
+    app.kubernetes.io/component: hdfs-snn
+{{- end -}}
+
+{{- if eq .Values.deployment.mode "Distributed" -}}
+{{- if .Values.hdfs.secondarynamenode.enabled -}}
+{{- $commonService := fromYaml (include "common.service" .) -}}
+{{- $stackstateHbaseHdfsSecondaryNamenodeService := fromYaml (include "hbase.hdfs.secondarynamenode.service" .) -}}
+{{- toYaml (merge $stackstateHbaseHdfsSecondaryNamenodeService $commonService) -}}
+{{- end -}}
+{{- end -}}

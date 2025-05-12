@@ -1,0 +1,47 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "elasticsearch.uname" . -}}
+{{- $servicePort := .Values.httpPort -}}
+{{- $ingressPath := .Values.ingress.path -}}
+{{- $apiVersion := (include "elasticsearch.ingress.apiVersion" .) -}}
+apiVersion: {{ $apiVersion }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "elasticsearch.labels.recommended" . | nindent 4 }}
+    {{- include "elasticsearch.labels.common" . | nindent 4 }}
+{{- with .Values.ingress.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+{{- if .Values.ingress.tls }}
+  tls:
+  {{- range .Values.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - host: {{ . }}
+      http:
+        paths:
+          - path: {{ $ingressPath }}
+            {{- if ne "networking.k8s.io/v1" $apiVersion }}
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: {{ $servicePort }}
+            {{- else }}
+            backend:
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $servicePort }}
+            pathType: Prefix
+            {{- end }}
+  {{- end }}
+{{- end }}

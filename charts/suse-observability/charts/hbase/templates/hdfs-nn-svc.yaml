@@ -1,0 +1,24 @@
+{{- define "hbase.hdfs.namenode.service" -}}
+metadata:
+  name: {{ template "common.fullname.short" . }}-hdfs-nn-headful
+  labels:
+    app.kubernetes.io/component: hdfs-nn
+spec:
+  ports:
+  - port: 9000
+    name: nn
+  - port: 50070
+    name: nninfo
+{{- if .Values.all.metrics.enabled }}
+  - port: 9404
+    name: metrics
+{{- end }}
+  selector:
+    app.kubernetes.io/component: hdfs-nn
+{{- end -}}
+
+{{- if eq .Values.deployment.mode "Distributed" -}}
+{{- $commonService := fromYaml (include "common.service" .) -}}
+{{- $stackstateHbaseHdfsNamenodeService := fromYaml (include "hbase.hdfs.namenode.service" .) -}}
+{{- toYaml (merge $stackstateHbaseHdfsNamenodeService $commonService) -}}
+{{- end -}}

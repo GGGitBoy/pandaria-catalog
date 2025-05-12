@@ -1,0 +1,17 @@
+apiVersion: v1
+appVersion: 0.4.17
+description: Common chartbuilding components and helpers
+home: https://gitlab.com/stackvista/devops/helm-charts.git
+icon: https://www.stackstate.com/wp-content/uploads/2019/02/152x152-favicon.png
+keywords:
+- common
+- stackstate
+maintainers:
+- email: jvanerp@stackstate.com
+  name: Jeroen van Erp
+- email: rbeckers@stackstate.com
+  name: Remco Beckers
+- email: vpartington@stackstate.com
+  name: Vincent Partington
+name: common
+version: 0.4.17

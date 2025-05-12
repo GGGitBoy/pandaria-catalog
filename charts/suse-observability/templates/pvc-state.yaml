@@ -1,0 +1,31 @@
+{{- define "stackstate.state.persistentvolumeclaim.txLog" -}}
+metadata:
+  name: {{ template "common.fullname.short" . }}-state-txlog
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.stackstate.experimental.storeTransactionLogsToPVC.volumeSize }}
+{{- end -}}
+
+{{- if and .Values.stackstate.experimental.storeTransactionLogsToPVC.enabled .Values.stackstate.experimental.server.split }}
+{{- $commonPVC := fromYaml (include "common.persistentvolumeclaim" .) -}}
+{{- $stackstateStatePVCTxLog := fromYaml (include "stackstate.state.persistentvolumeclaim.txLog" .) -}}
+{{- toYaml (merge $stackstateStatePVCTxLog $commonPVC) -}}
+{{- end -}}
+
+{{- if and .Values.stackstate.components.state.tmpToPVC .Values.stackstate.experimental.server.split }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "common.fullname.short" . }}-state-tmp
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.stackstate.components.state.tmpToPVC.volumeSize }}
+  {{ include "common.storage.class" ( dict "persistence" .Values.stackstate.components.state.tmpToPVC "global" .Values.global) | nindent 2}}
+{{- end}}

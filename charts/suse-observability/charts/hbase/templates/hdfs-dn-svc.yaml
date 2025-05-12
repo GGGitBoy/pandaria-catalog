@@ -1,0 +1,26 @@
+{{- define "hbase.hdfs.datanode.service" -}}
+metadata:
+  name: {{ template "common.fullname.short" . }}-hdfs-dn
+  labels:
+    app.kubernetes.io/component: hdfs-dn
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+  - port: 50010
+    name: dn
+  - port: 50075
+    name: dninfo
+{{- if .Values.all.metrics.enabled }}
+  - port: 9404
+    name: metrics
+{{- end }}
+  selector:
+    app.kubernetes.io/component: hdfs-dn
+{{- end -}}
+
+{{- if eq .Values.deployment.mode "Distributed" -}}
+{{- $commonService := fromYaml (include "common.service" .) -}}
+{{- $stackstateHbaseHdfsDatanodeService := fromYaml (include "hbase.hdfs.datanode.service" .) -}}
+{{- toYaml (merge $stackstateHbaseHdfsDatanodeService $commonService) -}}
+{{- end -}}

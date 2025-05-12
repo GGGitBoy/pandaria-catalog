@@ -1,0 +1,70 @@
+{{- define "stackstate.k8s.authorization.instance.admin.saas.role" -}}
+metadata:
+  name: {{ template "common.fullname.short" . }}-instance-admin
+rules:
+- apiGroups:
+  - instance.observability.cattle.io
+  resources:
+  - views
+  - ingestionapikeys
+  - metricbindings
+  - monitors
+  - notifications
+  - permissions
+  - servicetokens
+  - stackpackconfigurations
+  - dashboards
+  verbs:
+  - create
+  - update
+  - get
+  - delete
+- apiGroups:
+    - instance.observability.cattle.io
+  resources:
+    - agents
+    - apitokens
+    - metrics
+    - syncdata
+    - systemnotifications
+    - topology
+    - traces
+    - stackpacks
+  verbs:
+    - get
+- apiGroups:
+    - instance.observability.cattle.io
+  resources:
+    - syncdata
+    - visualizationsettings
+  verbs:
+    - update
+- apiGroups:
+    - instance.observability.cattle.io
+  resources:
+    - componentactions
+    - monitors
+  verbs:
+    - execute
+- apiGroups:
+    - instance.observability.cattle.io
+  resources:
+    - favoriteviews
+    - syncdata
+    - favoritedashboards
+  verbs:
+    - delete
+- apiGroups:
+    - instance.observability.cattle.io
+  resources:
+    - favoriteviews
+    - favoritedashboards
+  verbs:
+    - create
+{{- end -}}
+
+{{- if and (index .Values "role-k8s-authz" "enabled")  (eq .Values.stackstate.deployment.mode  "SaaS") -}}
+{{- $commonRole := fromYaml (include "common.role" .) -}}
+{{- $stsK8sAuthzRole := fromYaml (include "stackstate.k8s.authorization.instance.admin.saas.role" .) -}}
+{{- toYaml (merge $stsK8sAuthzRole $commonRole) -}}
+{{- end -}}

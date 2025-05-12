@@ -1,0 +1,13 @@
+apiVersion: v2
+appVersion: 0.4.25
+description: Common chartbuilding components and helpers
+home: https://gitlab.com/stackvista/devops/helm-charts.git
+icon: https://www.stackstate.com/wp-content/uploads/2019/02/152x152-favicon.png
+keywords:
+- common
+- stackstate
+maintainers:
+- email: ops@stackstate.com
+  name: Stackstate Ops Team
+name: common
+version: 0.4.25

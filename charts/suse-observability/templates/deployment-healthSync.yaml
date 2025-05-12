@@ -1,0 +1,192 @@
+{{- define "stackstate.healthSync.deployment.container.init" -}}
+name: server-init
+{{- if eq .Values.hbase.deployment.mode "Distributed" }}
+command:
+- sh
+- -c
+- |
+  /entrypoint -c {{ include "stackstate.kafka.endpoint" . }},{{ include "stackgraph.hbase.waitfor" . }},{{ template "common.fullname.short" . }}-initializer:1618 -t 300
+{{- else }}
+command:
+  - sh
+  - -c
+  - |
+    /entrypoint -c {{ include "stackstate.kafka.endpoint" . }},{{- .Release.Name }}-hbase-stackgraph:2182,{{ template "common.fullname.short" . }}-initializer:1618 -t 300
+{{- end }}
+image: "{{include "stackstate.wait.image.registry" .}}/{{ .Values.stackstate.components.wait.image.repository }}:{{ .Values.stackstate.components.wait.image.tag }}"
+imagePullPolicy: {{ .Values.stackstate.components.wait.image.pullPolicy | quote }}
+{{- end -}}
+
+{{- define "stackstate.healthSync.deployment.container.main" -}}
+args:
+{{- include "stackstate.service.args" . }}
+- -startRole
+- healthSync
+envFrom:
+  - secretRef:
+      name: {{ include "stackstate.secret.name.license" .  }}
+env:
+{{- $serviceConfig := dict "ServiceName" "health-sync" "ServiceConfig" .Values.stackstate.components.healthSync }}
+{{- $imageTagConfig := dict "ImageTag" .Values.stackstate.components.healthSync.image.tag }}
+{{- include "stackstate.service.envvars" (merge $serviceConfig .) }}
+{{- include "stackstate.baseurls.envvars" . }}
+{{- include "stackstate.metricstore.envvar" . }}
+- name: CONFIG_FORCE_stackstate_cacheStorage_backend
+  value: {{ .Values.stackstate.components.healthSync.cache.backend }}
+{{- if eq (lower .Values.stackstate.components.healthSync.cache.backend) "rocksdb" }}
+{{- $config := dict "Mem" $serviceConfig.ServiceConfig.resources.limits.memory "BaseMem" $serviceConfig.ServiceConfig.sizing.baseMemoryConsumption "JavaHeapFraction" $serviceConfig.ServiceConfig.sizing.javaHeapMemoryFraction }}
+- name: CONFIG_FORCE_stackstate_rocksdb_cacheSizeBytes
+  value: {{ include "stackstate.server.cache.memory.limit" $config | int | quote }}
+{{- end }}
+- name: ELASTICSEARCH_URI
+  value: "http://{{ include "stackstate.es.endpoint" . }}"
+- name: KAFKA_BROKERS
+  value: {{ include "stackstate.kafka.endpoint" . | quote }}
+- name: PROMETHEUS_WRITE_ENDPOINT
+  value: http://{{ include "stackstate.vmagent.endpoint" . }}:8429/api/v1/write
+- name: HADOOP_USER_NAME
+  value: nobody
+- name: ZOOKEEPER_QUORUM
+  value: {{ include "stackgraph.zookeeper.endpoint" . | quote }}
+{{- include "stackstate.component.envsFromExistingSecrets" .Values.stackstate.components.all.envsFromExistingSecrets }}
+{{- include "stackstate.component.envsFromExistingSecrets" .Values.stackstate.components.healthSync.envsFromExistingSecrets }}
+image: "{{ include "stackstate.image.registry" (merge $serviceConfig .) }}/{{ .Values.stackstate.components.healthSync.image.repository }}{{ .Values.stackstate.components.all.image.repositorySuffix }}:{{ include "stackstate.server.image.tag" (merge $imageTagConfig .) }}"
+imagePullPolicy: {{ default .Values.stackstate.components.all.image.pullPolicy .Values.stackstate.components.healthSync.image.pullPolicy | quote }}
+name: health-sync
+ports:
+- containerPort: 1618
+  name: health
+{{- if .Values.stackstate.instanceDebugApi.enabled }}
+- containerPort: 7080
+  name: instance
+{{- end }}
+{{- if .Values.stackstate.components.all.metrics.enabled }}
+- containerPort: 9404
+  name: metrics
+{{- end }}
+readinessProbe:
+  httpGet:
+    path: /readiness
+    port: health
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+livenessProbe:
+  httpGet:
+    path: /liveness
+    port: health
+  initialDelaySeconds: 60
+  timeoutSeconds: 5
+{{- with .Values.stackstate.components.healthSync.resources }}
+resources:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+volumeMounts:
+{{- if .Values.stackstate.components.healthSync.tmpToPVC }}
+- name: tmp-volume
+  mountPath: /tmp
+{{- end}}
+{{- include "stackstate.service.container.volumes" . }}
+{{- if .Values.stackstate.experimental.storeTransactionLogsToPVC.enabled }}
+{{ include "stackstate.service.transactionLog.volumeMount" . }}
+{{- end }}
+{{- end -}}
+
+{{- define "stackstate.healthSync.deployment" -}}
+{{- $commonContainer := fromYaml (include "common.container" .) -}}
+{{- $overrideContainer := fromYaml (include "stackstate.healthSync.deployment.container.main" .) -}}
+{{- $stsStackstateHealthSyncMainContainer := (merge $overrideContainer $commonContainer) -}}
+{{- $overrideContainer := fromYaml (include "stackstate.healthSync.deployment.container.init" .) -}}
+{{- $stsStackstateServerInitContainer := (merge $overrideContainer $commonContainer) -}}
+{{- $overrideContainer := fromYaml (include "stackstate.initContainer.ensure.no.server.statefulset.pods.are.running" .) -}}
+{{- $stsStackstateServerEnsureNoServerStatefulSetPodsAreRunningContainer := (merge $overrideContainer $commonContainer) -}}
+
+metadata:
+  name: {{ template "common.fullname.short" . }}-health-sync
+  labels:
+    app.kubernetes.io/component: health-sync
+    stackstate.com/connects-to-stackgraph: "true"
+    stackstate.com/replicas: "1"
+spec:
+  replicas: {{ .Values.stackstate.components.healthSync.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: health-sync
+  strategy:
+{{- if eq (lower .Values.stackstate.components.all.deploymentStrategy.type) "recreatesingletonsonly" }}
+    type: Recreate
+{{- else }}
+    {{- toYaml .Values.stackstate.components.all.deploymentStrategy | nindent 4 }}
+{{- end }}
+  template:
+    metadata:
+      annotations:
+        {{- include "common.metrics.annotations" (dict "metrics" .Values.stackstate.components.all.metrics "port" "9404" "container_name" "health-sync" "filter" .Values.stackstate.components.healthSync.agentMetricsFilter) | indent 8 }}
+        {{- include "stackstate.common.secret.checksum" . | nindent 8 }}
+        {{- include "stackstate.license.secret.checksum" . | nindent 8 }}
+        {{- include "stackstate.healthSync.secret.checksum" . | nindent 8 }}
+        {{- include "stackstate.healthSync.configmap.checksum" . | nindent 8 }}
+        {{- include "stackstate.component.podExtraAnnotations" (merge (dict "Name" "healthSync") .) }}
+      labels:
+        app.kubernetes.io/component: health-sync
+        stackstate.com/connects-to-stackgraph: "true"
+    spec:
+      serviceAccountName: {{ template "common.fullname.short" . }}-health-sync
+      {{- include "stackstate.image.pullSecret.name" (dict "context" $) | nindent 6 }}
+      initContainers:
+      - {{ toYaml $stsStackstateServerInitContainer | nindent 8 }}
+      - {{ toYaml $stsStackstateServerEnsureNoServerStatefulSetPodsAreRunningContainer | nindent 8 }}
+      {{- if .Values.stackstate.experimental.storeTransactionLogsToPVC.enabled }}
+      - {{ include "stackstate.initContainer.cleanTransactionLogsDirectory" . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.stackstate.components.healthSync.tmpToPVC }}
+      - {{ include "stackstate.initContainer.cleanTmpDirectory" . | nindent 8 }}
+      {{- end }}
+      containers:
+      - {{ toYaml $stsStackstateHealthSyncMainContainer | nindent 8 }}
+    {{- if or .Values.stackstate.components.all.nodeSelector .Values.stackstate.components.state.nodeSelector }}
+      nodeSelector:
+      {{- with .Values.stackstate.components.all.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.stackstate.components.healthSync.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+    {{- if or .Values.stackstate.components.all.affinity .Values.stackstate.components.healthSync.affinity }}
+      affinity:
+      {{- with .Values.stackstate.components.all.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.stackstate.components.healthSync.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+    {{- if or .Values.stackstate.components.all.tolerations .Values.stackstate.components.healthSync.tolerations }}
+      tolerations:
+      {{- with .Values.stackstate.components.all.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.stackstate.components.healthSync.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.stackstate.components.all.securityContext.enabled }}
+      securityContext: {{- omit .Values.stackstate.components.all.securityContext "enabled" | toYaml | nindent 8 }}
+    {{- end }}
+      volumes:
+        {{- if .Values.stackstate.components.healthSync.tmpToPVC }}
+        - name: tmp-volume
+          persistentVolumeClaim:
+            claimName: {{ template "common.fullname.short" . }}-health-sync-tmp
+        {{- end}}
+        {{- include "stackstate.service.pod.volumes" (dict "pod_name" "health-sync" "root" . ) | nindent 8 }}
+        {{- if .Values.stackstate.experimental.storeTransactionLogsToPVC.enabled }}
+        {{- include "stackstate.service.transactionLog.volume" (dict "pod_name" "health-sync" "root" . ) | nindent 8 }}
+        {{- end }}
+{{- end -}}
+
+{{- if .Values.stackstate.experimental.server.split }}
+{{- $commonDeployment := fromYaml (include "common.deployment" .) -}}
+{{- $healthSyncDeployment := fromYaml (include "stackstate.healthSync.deployment" .) -}}
+{{- toYaml (merge $healthSyncDeployment $commonDeployment) -}}
+{{- end}}

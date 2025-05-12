@@ -1,0 +1,22 @@
+{{- define "stackstate.open-telemetry-collector.configmap" -}}
+metadata:
+  name: suse-observability-otel-collector
+data:
+  api.url: "http://{{ template "common.fullname.short" . }}-{{ template "stackstate.api.name" . }}-headless:7070/internal/api/security/ingestion/authorize?withReceiverKey=true"
+  intake.url:
+  {{- if .Values.stackstate.components.receiver.split.enabled }}
+    "http://{{ template "common.fullname.short" . }}-receiver-base:7077/stsAgent/intake"
+  {{ else }}
+    "http://{{ template "common.fullname.short" . }}-receiver:7077/stsAgent/intake"
+  {{- end -}}
+{{- end -}}
+
+{{- if .Values.opentelemetry.enabled -}}
+{{- if lt (semver "3.13.1" | (semver .Capabilities.HelmVersion.Version).Compare) 0 -}}
+# See https://stackstate.atlassian.net/browse/STAC-21869 for more context
+{{- fail "Helm version should at least be 3.13.1 to support opentelemetry. Upgrade helm or disable opentelemetry through opentelementry.enabled." -}}
+{{- end -}}
+{{- $commonConfigMap := fromYaml (include "common.configmap" .) -}}
+{{- $stackstateOtelConfigMap := fromYaml (include "stackstate.open-telemetry-collector.configmap" .) -}}
+{{- toYaml (merge $stackstateOtelConfigMap $commonConfigMap) -}}
+{{- end -}}

@@ -1,0 +1,44 @@
+{{ template "chart.header" . }}
+{{ template "chart.description" . }}
+
+Current chart version is `{{ template "chart.version" . }}`
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+## Usage
+
+This chart is used to generate a SUSE Observability values file that can be used with the SUSE Observability Helm Chart to deploy the SUSE Observability platform.
+You can use this by running the following command:
+
+```shell
+helm template \
+  --name suse-observability \
+  --set license=<your-license-key> \
+  --set baseUrl=<your-suse-observability-base-url> \
+  --set pullSecret.username=<your-docker-registry-username> \
+  --set pullSecret.password=<your-docker-registry-password> \
+  suse-observability/suse-observability-values
+```
+
+The output of this file can be used as the values file for the SUSE Observability Helm Chart.
+
+## Required Values
+
+In order to successfully install this chart, you **must** provide the following variables:
+* `license`
+* `baseUrl`
+
+## Optional Values
+
+The following values can be optionally set.
+
+* `receiverApiKey` - If omitted, a random API key will be generated.
+* `adminPassword` - If omitted, a random password will be generated and will be output in a separate Yaml document.
+* `adminApiPassword` - If omitted, a random password will be generated and will be output in a separate Yaml document.
+* `imageRegistry` - If omitted, the default value of `quay.io` will be used.
+* `pullSecret.username` - If pullSecret username or password is omitted no pull secret will be configured
+* `pullSecret.password` - If pullSecret username or password is omitted no pull secret will be configured
+
+{{ template "chart.valuesSection" . }}

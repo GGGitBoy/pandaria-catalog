@@ -1,0 +1,12 @@
+{{- define "stackstate.correlate.configmap-log" -}}
+metadata:
+  name: {{ template "common.fullname.short" . }}-correlate-log
+data:
+  logback.xml: |
+{{- $logging := printf "%s\n%s" (include "stackstate.configmap.correlate-base-log" .) .Values.stackstate.components.correlate.additionalLogging -}}
+{{- include "stackstate.configmap.microservices-log" (merge (dict "RootLevel" "INFO" "AdditionalLogging" $logging) .) | nindent 4 -}}
+{{- end -}}
+
+{{- $commonConfigMap := fromYaml (include "common.configmap" .) -}}
+{{- $stackstateCorrelateLogConfigMap := fromYaml (include "stackstate.correlate.configmap-log" .) -}}
+{{- toYaml (merge $stackstateCorrelateLogConfigMap $commonConfigMap) -}}

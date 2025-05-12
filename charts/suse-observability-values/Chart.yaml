@@ -1,0 +1,14 @@
+apiVersion: v2
+appVersion: 1.0.0
+description: Helm Chart for rendering SUSE Observability Values
+home: https://gitlab.com/stackvista/stackstate.git
+icon: https://www.stackstate.com/wp-content/uploads/2019/02/152x152-favicon.png
+keywords:
+- kubernetes
+- observability
+- SUSE Observability
+maintainers:
+- email: ops@stackstate.com
+  name: SUSE
+name: suse-observability-values
+version: 1.0.7

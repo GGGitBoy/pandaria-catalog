@@ -1,0 +1,75 @@
+{{- define "common.deployment" -}}
+{{- $common := dict "Values" .Values.common -}}
+{{- $noCommon := omit .Values "common" -}}
+{{- $overrides := dict "Values" $noCommon -}}
+{{- $noValues := omit . "Values" -}}
+{{- with merge $noValues $overrides $common -}}
+apiVersion: {{ .Values.deployment.apiVersion }}
+kind: Deployment
+metadata:
+  annotations:
+    {{- include "common.annotations.gitlab" . | nindent 4 }}
+  {{- with .Values.deployment.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  name: {{ template "common.fullname" . }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    {{- include "common.labels.custom" . | nindent 4 }}
+spec:
+  progressDeadlineSeconds: {{ int .Values.deployment.progressDeadlineSeconds }}
+  replicas: {{ int .Values.deployment.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "common.labels.selector" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+      {{- with .Values.pod.annotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "common.labels.selector" . | nindent 8 }}
+        {{- include "common.labels.custom" . | nindent 8 }}
+    spec:
+      containers:
+      -
+        {{ include "common.container" . | nindent 8 }}
+    {{- with .Values.deployment.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      affinity:
+      {{- if eq .Values.deployment.antiAffinity.strategy "hard" }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: {{ .Values.deployment.antiAffinity.topologyKey }}
+              labelSelector:
+                matchLabels:
+                  {{- include "common.labels.selector" . | nindent 18 }}
+      {{- else if eq .Values.deployment.antiAffinity.strategy "soft" }}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: {{ .Values.deployment.antiAffinity.topologyKey }}
+              labelSelector:
+                matchLabels:
+                  {{- include "common.labels.selector" . | nindent 18 }}
+      {{- end }}
+    {{- with .Values.deployment.affinity }}
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      dnsPolicy: {{ .Values.deployment.dnsPolicy }}
+      restartPolicy: {{ .Values.deployment.restartPolicy }}
+    {{- with .Values.deployment.securityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      terminationGracePeriodSeconds: {{ int .Values.deployment.terminationGracePeriodSeconds }}
+    {{- with .Values.deployment.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+{{- end -}}
+{{- end -}}

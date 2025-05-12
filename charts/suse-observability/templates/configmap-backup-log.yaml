@@ -1,0 +1,12 @@
+{{- define "stackstate.backup.configmap-log" -}}
+metadata:
+  name: {{ template "common.fullname.short" . }}-backup-log
+data:
+  logback.xml: |
+{{- $logging := printf "%s\n%s" (include "stackstate.configmap.server-base-log" .) .Values.backup.additionalLogging -}}
+{{- include "stackstate.configmap.microservices-log" (merge (dict "RootLevel" "WARN" "AdditionalLogging" $logging) .) | nindent 4 -}}
+{{- end -}}
+
+{{- $commonConfigMap := fromYaml (include "common.configmap" .) -}}
+{{- $stackstateBackupLogConfigMap := fromYaml (include "stackstate.backup.configmap-log" .) -}}
+{{- toYaml (merge $stackstateBackupLogConfigMap $commonConfigMap) -}}

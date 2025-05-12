@@ -1,0 +1,33 @@
+# receiverApiKey -- The SUSE Observability Receiver API Key, used for sending telemetry data to the server.
+receiverApiKey: ""
+
+# imageRegistry -- The registry to pull the SUSE Observability images from.
+imageRegistry: "registry.rancher.com"
+
+pullSecret:
+  # pullSecret.username -- The username used for pulling all SUSE Observability images from the registry.
+  username: null
+  # pullSecret.password -- The password used for pulling all SUSE Observability images from the registry.
+  password: null
+
+# license -- The SUSE Observability license key.
+license:
+
+# baseUrl -- The base URL of the SUSE Observability instance.
+baseUrl: ""
+
+# adminPassword -- The password for the default 'admin' user used for authenticating with the SUSE Observability UI. If not provided a random password is generated.  If the password is not a bcrypt hash, but provided in plaintext, the value will be bcrypt hashed in the output.
+adminPassword: ""
+baseConfig:
+  # baseConfig.generate -- If we want to generate the base configuration
+  generate: true
+sizing:
+  # sizing.generate -- If we want to generate the sizing values that match the amount of nodes we are monitoring
+  generate: true
+  # sizing.profile -- Profile. OneOf 10-nonha, 20-nonha, 50-nonha, 100-nonha, 150-ha, 250-ha, 500-ha
+  profile: ""
+affinity:
+  # affinity.generate -- If we want to generate affinity values
+  generate: false
+  # affinity.nodeAffinity --  Node Affinity settings
+  nodeAffinity: null

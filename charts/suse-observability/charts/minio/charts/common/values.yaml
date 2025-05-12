@@ -1,0 +1,328 @@
+# Default values for commons.
+
+clusterrole:
+  # clusterrole.annotations -- Annotations for `ClusterRole` objects.
+  annotations: {}
+  # clusterrole.apiVersion -- Kubernetes apiVersion to use with a `ClusterRole` object.
+  apiVersion: "rbac.authorization.k8s.io/v1"
+
+clusterrolebinding:
+  # clusterrolebinding.annotations -- Annotations for `ClusterRoleBinding` objects.
+  annotations: {}
+  # clusterrolebinding.apiVersion -- Kubernetes apiVersion to use with a `ClusterRoleBinding` object.
+  apiVersion: "rbac.authorization.k8s.io/v1"
+
+configmap:
+  # configmap.annotations -- Annotations for `ConfigMap` objects.
+  annotations: {}
+  # configmap.apiVersion -- Kubernetes apiVersion to use with a `ConfigMap` object.
+  apiVersion: "v1"
+
+container:
+  livenessProbeDefaults:
+    # container.livenessProbeDefaults.enabled -- Enable default options of `livenessProbe` check.
+    enabled: false
+    # container.livenessProbeDefaults.failureThreshold -- `failureThreshold` for the liveness probe.
+    failureThreshold: 3
+    # container.livenessProbeDefaults.initialDelaySeconds -- `initialDelaySeconds` for the liveness probe.
+    initialDelaySeconds: 10
+    # container.livenessProbeDefaults.periodSeconds -- `periodSeconds` for the liveness probe.
+    periodSeconds: 10
+    # container.livenessProbeDefaults.successThreshold -- `successThreshold` for the liveness probe.
+    successThreshold: 1
+    # container.livenessProbeDefaults.timeoutSeconds -- `timeoutSeconds` for the liveness probe.
+    timeoutSeconds: 2
+  readinessProbeDefaults:
+    # container.readinessProbeDefaults.enabled -- Enable default options of `readinessProbe` check.
+    enabled: false
+    # container.readinessProbeDefaults.failureThreshold -- `failureThreshold` for the readiness probe.
+    failureThreshold: 3
+    # container.readinessProbeDefaults.initialDelaySeconds -- `initialDelaySeconds` for the readiness probe.
+    initialDelaySeconds: 10
+    # container.readinessProbeDefaults.periodSeconds -- `periodSeconds` for the readiness probe.
+    periodSeconds: 10
+    # container.readinessProbeDefaults.successThreshold -- `successThreshold` for the readiness probe.
+    successThreshold: 1
+    # container.readinessProbeDefaults.timeoutSeconds -- `timeoutSeconds` for the readiness probe.
+    timeoutSeconds: 2
+  # container.resources -- Container resource requests / limits.
+  resources: {}
+    # limits:
+    #   cpu: "200m"
+    #   memory: "256Mi"
+    # requests:
+    #   cpu: "100m"
+    #   memory: "128Mi"
+  securityContext:
+    # container.securityContext.allowPrivilegeEscalation -- Controls whether a process can gain more privileges than its parent process.
+    allowPrivilegeEscalation: false
+    capabilities:
+      # container.securityContext.capabilities.drop -- Drops all Linux capabilities by default.
+      drop:
+        - all
+    # runAsNonRoot: true
+    # runAsUser: 65534
+
+cronjob:
+  # cronjob.annotations -- Annotations for `CronJob` objects.
+  annotations: {}
+  # cronjob.concurrencyPolicy -- Specifies how to treat concurrent executions of a job that is created by this `CronJob` object.
+  concurrencyPolicy: Forbid
+  # cronjob.dnsPolicy -- DNS policy to apply to `Pod` objects.
+  dnsPolicy: ClusterFirst
+  # cronjob.failedJobsHistoryLimit -- Specifies how many failed `Job` objects created from a parent `CronJob` should be kept.
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    # cronjob.jobTemplate.annotations -- Annotations for `Job` objects created from a parent `CronJob` object.
+    annotations: {}
+  # cronjob.nodeSelector -- Node labels for pod assignment.
+  nodeSelector: {}
+  # cronjob.restartPolicy -- Restart policy to apply to containers within a `Pod` object.
+  restartPolicy: OnFailure
+  # cronjob.successfulJobsHistoryLimit -- Specifies how many successful `Job` objects created from a parent `CronJob` should be kept.
+  successfulJobsHistoryLimit: 5
+  # cronjob.schedule -- A cron string, such as `0 * * * *` or `@hourly`, which specifies when `Job` objects are created and executed.
+  schedule: "0 0 * * *"
+  # cronjob.suspend -- If set to `true`, all subsequent executions are suspended; this setting does not apply to already started executions.
+  suspend: false
+  # cronjob.tolerations -- Toleration labels for `Pod` assignment.
+  tolerations: []
+
+daemonset:
+  # daemonset.annotations -- Annotations for `DaemonSet` objects.
+  annotations: {}
+  # daemonset.apiVersion -- Kubernetes apiVersion to use with a `DaemonSet` object.
+  apiVersion: apps/v1
+  # daemonset.dnsPolicy -- DNS policy to apply to `Pod` objects.
+  dnsPolicy: ClusterFirst
+  # daemonset.nodeSelector -- Node labels for pod assignment.
+  nodeSelector: {}
+  # daemonset.restartPolicy -- Restart policy to apply to containers within a `Pod` object.
+  restartPolicy: Always
+  # daemonset.securityContext -- The security settings for all containers in a `Pod` object.
+  securityContext: {}
+    # runAsUser: 1000
+    # runAsGroup: 3000
+    # fsGroup: 2000
+  # daemonset.terminationGracePeriodSeconds -- Time (in seconds) to wait for a `Pod` object to shut down gracefully.
+  terminationGracePeriodSeconds: 30
+  # daemonset.tolerations -- Toleration labels for `Pod` assignment.
+  tolerations: []
+  # daemonset.updateStrategy -- Strategy to use for deploying `DaemonSet` objects.
+  updateStrategy:
+    type: RollingUpdate
+
+deployment:
+  # deployment.affinity -- Affinity settings for pod assignment.
+  affinity: {}
+  # deployment.annotations -- Annotations for `Deployment` objects.
+  annotations: {}
+  # deployment.apiVersion -- Kubernetes apiVersion to use with a `Deployment` object.
+  apiVersion: apps/v1
+  antiAffinity:
+    # deployment.antiAffinity.strategy -- Spread pods using simple `antiAffinity`; valid values are `hard` or `soft`.
+    strategy: ""
+    # deployment.antiAffinity.topologyKey -- The `topologyKey` to use for simple `antiAffinity` rule.
+    topologyKey: failure-domain.beta.kubernetes.io/zone
+  # deployment.dnsPolicy -- DNS policy to apply to `Pod` objects.
+  dnsPolicy: ClusterFirst
+  # deployment.nodeSelector -- Node labels for pod assignment.
+  nodeSelector: {}
+  # deployment.progressDeadlineSeconds -- Denotes the number of seconds the `Deployment` controller waits before indicating (in the `Deployment` status) that the `Deployment` progress has stalled.
+  progressDeadlineSeconds: 600
+  # deployment.replicaCount -- Amount of replicas to create for the `Deployment` object.
+  replicaCount: 1
+  # deployment.restartPolicy -- Restart policy to apply to containers within a `Pod` object.
+  restartPolicy: Always
+  # deployment.securityContext -- The security settings for all containers in a `Pod` object.
+  securityContext: {}
+    # runAsUser: 1000
+    # runAsGroup: 3000
+    # fsGroup: 2000
+  # deployment.strategy -- Strategy to use for deploying `Deployment` objects.
+  strategy: {}
+    # rollingUpdate:
+    #   maxSurge: 25%
+    #   maxUnavailable: 25%
+    # type: RollingUpdate
+  # deployment.terminationGracePeriodSeconds -- Time (in seconds) to wait for a `Pod` object to shut down gracefully.
+  terminationGracePeriodSeconds: 30
+  # deployment.tolerations -- Toleration labels for `Pod` assignment.
+  tolerations: []
+
+extraEnv:
+  # extraEnv.open -- Extra open environment variables to inject into pods.
+  open: {}
+  # extraEnv.secret -- Extra secret environment variables to inject into pods via a `Secret` object.
+  secret: {}
+
+gitlab:
+  # gitlab.app -- If CI is GitLab, specify the `app` for annotations.
+  app: ""
+  # gitlab.env -- If CI is GitLab, specify the `env` for annotations.
+  env: ""
+
+global: {}
+
+image:
+  # image.pullPolicy -- The pull policy for the Docker image.
+  pullPolicy: IfNotPresent
+  # image.repository -- (string) Repository of the Docker image.
+  repository: nginx
+  # image.tag -- (string) Tag of the Docker image.
+  tag: latest
+
+ingress:
+  # ingress.annotations -- Annotations for `Ingress` objects.
+  annotations: {}
+  # ingress.hosts -- List of ingress hostnames.
+  hosts: []
+  # - host: chart-example.local
+  #   paths: []
+  # ingress.tls -- List of ingress TLS certificates to use.
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+job:
+  # job.annotations -- Annotations for `Job` objects.
+  annotations: {}
+  # job.apiVersion -- Kubernetes apiVersion to use with a `Job` object.
+  apiVersion: batch/v1
+  # job.backoffLimit -- Number of retries before considering a `Job` as failed
+  backoffLimit: 5
+  # job.dnsPolicy -- DNS policy to apply to `Pod` objects.
+  dnsPolicy: ClusterFirst
+  # job.nodeSelector -- Node labels for pod assignment.
+  nodeSelector: {}
+  # job.restartPolicy -- Restart policy to apply to containers within a `Pod` object.
+  restartPolicy: OnFailure
+  # job.suspend -- If set to `true`, all subsequent executions are suspended; this setting does not apply to already started executions.
+  suspend: false
+  # job.tolerations -- Toleration labels for `Pod` assignment.
+  tolerations: []
+  # job.ttlSecondsAfterFinished -- TTL for completed jobs before they are deleted.
+  ttlSecondsAfterFinished: 300
+
+networkpolicy:
+  # networkpolicy.annotations -- Annotations for `NetworkPolicy` objects.
+  annotations: {}
+  # networkpolicy.apiVersion -- Kubernetes apiVersion to use with a `NetworkPolicy` object.
+  apiVersion: "networking.k8s.io/v1"
+
+persistentvolumeclaim:
+  # persistentvolumeclaim.accessMode -- Default type of access for mounted volume.
+  accessMode: ReadWriteOnce
+  # persistentvolumeclaim.annotations -- Annotations for `PersistentVolumeClaim` objects.
+  annotations: {}
+  # persistentvolumeclaim.apiVersion -- Kubernetes apiVersion to use with a `PersistentVolumeClaim` object.
+  apiVersion: "v1"
+  # persistentvolumeclaim.size -- Default size for `PersistentVolumeClaim` object.
+  size: 10Gi
+  # persistentvolumeclaim.storageClass -- Default storage class for `PersistentVolumeClaim` object. If left blank, then the default provisioner is used. If set to "-", then `storageClass: ""`, which disabled dynamic provisioning.
+  storageClass:
+
+pod:
+  # pod.annotations -- Annotations for `Pod` objects.
+  annotations: {}
+
+poddisruptionbudget:
+  # poddisruptionbudget.annotations -- Annotations for `PodDisruptionBudget` objects.
+  annotations: {}
+
+role:
+  # clusterrole.annotations -- Annotations for `Role` objects.
+  annotations: {}
+  # clusterrole.apiVersion -- Kubernetes apiVersion to use with a `Role` object.
+  apiVersion: "rbac.authorization.k8s.io/v1"
+
+rolebinding:
+  # rolebinding.annotations -- Annotations for `RoleBinding` objects.
+  annotations: {}
+  # rolebinding.apiVersion -- Kubernetes apiVersion to use with a `RoleBinding` object.
+  apiVersion: "rbac.authorization.k8s.io/v1"
+
+secret:
+  # secret.annotations -- Annotations for `Secret` objects.
+  annotations: {}
+  # secret.apiVersion -- Kubernetes apiVersion to use with a `Secret` object.
+  apiVersion: "v1"
+
+service:
+  # service.annotations -- Annotations for `Service` objects.
+  annotations: {}
+  # service.apiVersion -- Kubernetes apiVersion to use with a `Service` object.
+  apiVersion: "v1"
+  # service.type -- Specify a cluster IP address instead of assigning a random value; only enabled when `service.type` is set to `ClusterIP`.
+  clusterIP: ""
+  # service.externalIPs -- List of external IP addresses to map to the `Service` object.
+  externalIPs: []
+  # service.externalTrafficPolicy -- Denotes if this Service desires to route external traffic to node-local or cluster-wide endpoints; only enabled when `service.type` is set to `LoadBalancer` or `NodePort`.
+  externalTrafficPolicy: Cluster
+  # service.loadBalancerIP -- Specify the load balancer IP addresses, if the cloud provider supports; only enabled when `service.type` is set to `LoadBalancer`.
+  loadBalancerIP: ""
+  # service.loadBalancerIP -- Specify the source IP range to allow traffic from; only enabled when `service.type` is set to `LoadBalancer`.
+  loadBalancerSourceRanges: []
+  # service.ports -- List of ports to apply to the `Service` object.
+  ports: []
+    # - name: http
+    #   protocol: TCP
+    #   port: 80
+    #   targetPort: 9376
+    # - name: https
+    #   protocol: TCP
+    #   port: 443
+    #   targetPort: 9377
+  # service.type -- Kubernetes 'Service' type to use.
+  type: ClusterIP
+
+serviceaccount:
+  # serviceaccount.annotations -- Annotations for `ServiceAccount` objects.
+  annotations: {}
+  # serviceaccount.apiVersion -- Kubernetes apiVersion to use with a `ServiceAccount` object.
+  apiVersion: "v1"
+
+servicemonitor:
+  # servicemonitor.annotations -- Annotations for `ServiceMonitor` objects.
+  annotations: {}
+  # servicemonitor.apiVersion -- Kubernetes apiVersion to use with a `ServiceMonitor` object.
+  apiVersion: "monitoring.coreos.com/v1"
+  # servicemonitor.interval -- Default interval used on `Service` objects for monitoring through a `ServiceMonitor` object.
+  interval: "20s"
+  # servicemonitor.port -- Default port used on `Service` objects for monitoring through a `ServiceMonitor` object.
+  port: metrics
+  # servicemonitor.path -- Default path used on `Service` objects for monitoring through a `ServiceMonitor` object.
+  path: /metrics
+  # servicemonitor.scheme -- Default scheme used on `Service` objects for monitoring through a `ServiceMonitor` object.
+  scheme: http
+
+statefulset:
+  # statefulset.affinity -- Affinity settings for pod assignment.
+  affinity: {}
+  # statefulset.annotations -- Annotations for `StatefulSet` objects.
+  annotations: {}
+  # statefulset.apiVersion -- Kubernetes apiVersion to use with a `StatefulSet` object.
+  apiVersion: apps/v1
+  antiAffinity:
+    # statefulset.antiAffinity.strategy -- Spread pods using simple `antiAffinity`; valid values are `hard` or `soft`.
+    strategy: ""
+    # statefulset.antiAffinity.topologyKey -- The `topologyKey` to use for simple `antiAffinity` rule.
+    topologyKey: failure-domain.beta.kubernetes.io/zone
+  # statefulset.dnsPolicy -- DNS policy to apply to `Pod` objects.
+  dnsPolicy: ClusterFirst
+  # statefulset.nodeSelector -- Node labels for pod assignment.
+  nodeSelector: {}
+  # statefulset.podManagementPolicy -- Policy to dictate how `StatefulSet` pods are updated; either `OrderedReady`, or `Parallel`.
+  podManagementPolicy: OrderedReady
+  # statefulset.replicaCount -- Amount of replicas to create for the `StatefulSet` object.
+  replicaCount: 1
+  # statefulset.restartPolicy -- Restart policy to apply to containers within a `Pod` object.
+  restartPolicy: Always
+  # statefulset.terminationGracePeriodSeconds -- Time (in seconds) to wait for a `Pod` object to shut down gracefully.
+  terminationGracePeriodSeconds: 30
+  # statefulset.tolerations -- Toleration labels for `Pod` assignment.
+  tolerations: []
+  # statefulset.updateStrategy -- Strategy to use for deploying `StatefulSet` objects.
+  updateStrategy:
+    type: RollingUpdate

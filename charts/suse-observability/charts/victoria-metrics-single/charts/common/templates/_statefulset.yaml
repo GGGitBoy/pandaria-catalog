@@ -1,0 +1,80 @@
+{{- define "common.statefulset" -}}
+{{- $common := dict "Values" .Values.common -}}
+{{- $noCommon := omit .Values "common" -}}
+{{- $overrides := dict "Values" $noCommon -}}
+{{- $noValues := omit . "Values" -}}
+{{- with merge $noValues $overrides $common -}}
+apiVersion: {{ .Values.statefulset.apiVersion }}
+kind: StatefulSet
+metadata:
+  annotations:
+    {{- include "common.annotations.gitlab" . | nindent 4 }}
+  {{- with .Values.statefulset.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  name: {{ template "common.fullname" . }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    {{- include "common.labels.custom" . | nindent 4 }}
+spec:
+  podManagementPolicy: {{ .Values.statefulset.podManagementPolicy }}
+  replicas: {{ int .Values.statefulset.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "common.labels.selector" . | nindent 6 }}
+{{- with .Values.statefulset.updateStrategy }}
+  updateStrategy:
+    {{- toYaml . | nindent 4 }}
+{{- end }}
+  serviceName: {{ template "common.fullname" . }}
+  template:
+    metadata:
+      annotations:
+      {{- with .Values.pod.annotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "common.labels.selector" . | nindent 8 }}
+        {{- include "common.labels.custom" . | nindent 8 }}
+    spec:
+      containers:
+      -
+        {{ include "common.container" . | nindent 8 }}
+    {{- with .Values.statefulset.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      affinity:
+      {{- if eq .Values.statefulset.antiAffinity.strategy "hard" }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: {{ .Values.statefulset.antiAffinity.topologyKey }}
+              labelSelector:
+                matchLabels:
+                  {{- include "common.labels.selector" . | nindent 18 }}
+      {{- else if eq .Values.statefulset.antiAffinity.strategy "soft" }}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: {{ .Values.statefulset.antiAffinity.topologyKey }}
+              labelSelector:
+                matchLabels:
+                  {{- include "common.labels.selector" . | nindent 18 }}
+      {{- end }}
+    {{- with .Values.statefulset.affinity }}
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      dnsPolicy: {{ .Values.statefulset.dnsPolicy }}
+      restartPolicy: {{ .Values.statefulset.restartPolicy }}
+    {{- with .Values.statefulset.securityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      terminationGracePeriodSeconds: {{ int .Values.statefulset.terminationGracePeriodSeconds }}
+    {{- with .Values.statefulset.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+{{- end -}}
+{{- end -}}

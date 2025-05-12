@@ -1,0 +1,32 @@
+{
+    "systemPermissions": [
+        "access-cli",
+        "create-views",
+        "execute-component-actions",
+        "export-settings",
+        "manage-monitors",
+        "manage-notifications",
+        "manage-stackpacks",
+        "manage-star-view",
+        "perform-custom-query",
+        "read-metrics",
+        "read-permissions",
+        "read-settings",
+        "read-telemetry-streams",
+        "read-traces",
+        "run-monitors",
+        "update-visualization",
+        "view-metric-bindings",
+        "view-monitors",
+        "view-notifications",
+        "read-agents",
+        "read-system-notifications",
+        "create-dashboards",
+        "view-dashboards",
+        "update-dashboards",
+        "delete-dashboards",
+        "create-favorite-dashboards",
+        "delete-favorite-dashboards"
+    ],
+    "viewPermissions" : [ "access-view", "save-view", "delete-view" ]
+}

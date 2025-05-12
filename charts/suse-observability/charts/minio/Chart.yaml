@@ -1,0 +1,20 @@
+apiVersion: v2
+appVersion: master
+dependencies:
+- name: common
+  repository: file://../common/
+  version: '*'
+description: High Performance, Kubernetes Native Object Storage
+home: https://min.io
+icon: https://min.io/resources/img/logo/MINIO_wordmark.png
+keywords:
+- storage
+- object-storage
+- S3
+maintainers:
+- email: dev@minio.io
+  name: MinIO, Inc
+- email: ops@stackstate.com
+  name: Stackstate Ops Team
+name: minio
+version: 8.0.10-stackstate.11
