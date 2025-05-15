@@ -1,0 +1,22 @@
+annotations:
+  helm.sh/images: "- image: dp.apps.rancher.io/containers/suse-ai-observability-extension-setup:1.0.2\n
+    \ name: suse-ai-observability-extension-setup\n- image: dp.apps.rancher.io/containers/suse-ai-observability-extension-runtime:1.0.2\n
+    \ name: suse-ai-observability-extension-runtime\n  \n"
+apiVersion: v2
+appVersion: 1.0.2
+description: The SUSE AI Observability Extension enhances SUSE Observability with
+  AI-optimized dashboards and visualizations. It seamlessly integrates with applications
+  instrumented using the OpenLIT SDK.
+home: https://apps.rancher.io/applications/suse-ai-observability-extension
+icon: https://apps.rancher.io/logos/suse-ai-observability-extension.png
+keywords:
+- ai
+- observability
+maintainers:
+- name: SUSE LLC
+  url: https://www.suse.com
+name: suse-ai-observability-extension
+sources:
+- https://github.com/SUSE/suse-ai-observability-extension
+type: application
+version: 1.0.0

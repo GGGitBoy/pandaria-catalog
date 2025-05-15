@@ -1,0 +1,72 @@
+{{- /*
+Copyright (c) 2025 SUSE LLC All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/}}
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "suse-ai-observability-extension.fullname" . }}-role
+  labels:
+    {{- include "suse-ai-observability-extension.labels" . | nindent 4 }}
+rules:
+- apiGroups: [""]
+  resources: ["*"]
+  verbs: ["get", "list"]
+- apiGroups: ["storage.k8s.io"]
+  resources: ["storageclasses"]
+  verbs: ["get", "list"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "suse-ai-observability-extension.fullname" . }}-binding
+  labels:
+    {{- include "suse-ai-observability-extension.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "suse-ai-observability-extension.fullname" . }}-role
+subjects:
+- kind: ServiceAccount
+  name: {{ include "suse-ai-observability-extension.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "suse-ai-observability-extension.fullname" . }}-clusterrole
+  labels:
+    {{- include "suse-ai-observability-extension.labels" . | nindent 4 }}
+rules:
+- apiGroups: [""]
+  resources:
+  - persistentvolumeclaims
+  - persistentvolumeclaims/status
+  - persistentvolumes
+  verbs: ["list", "get"]
+- apiGroups: ["storage.k8s.io"]
+  resources:
+  - storageclasses
+  verbs: ["list", "get"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "suse-ai-observability-extension.fullname" . }}-clusterrolebinding
+  labels:
+    {{- include "suse-ai-observability-extension.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "suse-ai-observability-extension.fullname" . }}-clusterrole
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "suse-ai-observability-extension.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}

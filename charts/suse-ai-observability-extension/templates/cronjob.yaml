@@ -1,0 +1,69 @@
+{{- /*
+Copyright (c) 2025 SUSE LLC All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+*/}}
+
+{{- $serverUrl := .Values.serverUrl | required ".Values.serverUrl is required." -}}
+{{- $clusterName := .Values.clusterName | required ".Values.clusterName is required." -}}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "suse-ai-observability-extension.fullname" . }}
+  labels: 
+    {{- include "suse-ai-observability-extension.labels" . | nindent 4 }}
+spec:
+  jobTemplate:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "suse-ai-observability-extension.labels" . | nindent 8 }}
+        {{- with .Values.pobLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      activeDeadlineSeconds: 600
+      backoffLimit: 1
+      template:
+        spec:
+          {{- include "suse-ai-observability-extension.imagePullSecrets" . | nindent 10 }}
+          serviceAccountName: {{ include "suse-ai-observability-extension.serviceAccountName" . }}
+          containers:
+          - name: {{ $.Chart.Name }}
+            image: "{{ with (coalesce .Values.global.imageRegistry .Values.image.registry) }}{{ . }}/{{ end }}{{ .Values.image.repository }}:{{ .Values.image.tag | default $.Chart.AppVersion }}"
+            imagePullPolicy: {{ $.Values.image.pullPolicy }}
+            env:
+            - name: STACKSTATE_API_URL
+              value: {{$serverUrl}}
+            - name: STACKSTATE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: API_KEY
+                  name: {{ include "suse-ai-observability-extension.fullname" . }}-secret
+            - name: STACKSTATE_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: API_TOKEN
+                  name: {{ include "suse-ai-observability-extension.fullname" . }}-secret
+            - name: KUBERNETES_IN_CLUSTER
+              value: "true"
+            - name: KUBERNETES_CLUSTER
+              value: {{ $clusterName }}
+            - name: INSTANCE_TYPE
+              value: openlit
+            - name: INSTANCE_URL
+              value: {{ $clusterName }} 
+            resources:
+              {{- toYaml .Values.resources | nindent 16 }}
+          restartPolicy: Never
+          securityContext: 
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          terminationGracePeriodSeconds: 30
+  schedule: "{{.Values.schedule}}"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  suspend: false
+  concurrencyPolicy: Forbid

@@ -1,0 +1,77 @@
+# Copyright (c) 2025 SUSE LLC All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+global:
+  # -- Global override for container image registry
+  imageRegistry: ""
+  # -- Global override for container image registry pull secrets
+  imagePullSecrets: []
+
+# Default values for suse-ai-observability-extension.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# SUSE Observability auth details
+serverUrl: ''
+apiKey: ''
+apiToken: ''
+clusterName: ''
+schedule: '*/5 * * * *'
+
+# This sets the runtime container image
+image:
+  # -- Image registry to use for the suse-ai-observability-extension-runtime container      
+  registry: dp.apps.rancher.io
+  # -- Image repository to use for the suse-ai-observability-extension-runtime container
+  repository: containers/suse-ai-observability-extension-runtime
+  # -- Image tag to use for the suse-ai-observability-extension-runtime container
+  tag: "1.0.2"
+  # This sets the pull policy for images.
+  pullPolicy: IfNotPresent
+
+# This sets the setup container image
+setupImage:
+  # -- Image registry to use for the suse-ai-observability-extension-setup container      
+  registry: dp.apps.rancher.io
+  # -- Image repository to use for the suse-ai-observability-extension-setup container
+  repository: containers/suse-ai-observability-extension-setup
+  # -- Image tag to use for the suse-ai-observability-extension-setup container
+  tag: "1.0.2"
+  # This sets the pull policy for images.
+  pullPolicy: IfNotPresent
+
+# This is to override the chart name.
+nameOverride: ''
+fullnameOverride: ''
+
+# This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+serviceAccount:
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ''
+
+# This is for setting Kubernetes Annotations to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+# This is for setting Kubernetes Labels to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+podLabels: {}
+
+podSecurityContext:
+  {}
+  # fsGroup: 2000
+
+resources:
+  {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
