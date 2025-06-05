@@ -1,0 +1,10 @@
+auth:
+  postgresUsername: admin
+  postgresPassword: admin
+
+global:
+  imagePullSecrets:
+    - application-collection
+
+service:
+  type: NodePort

@@ -1,0 +1,15 @@
+{{- $scripts := .Files.Glob "scripts/{*,postgresql/*}.sh" }}
+{{- if $scripts }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  {{- include "application-collection.render.annotations" . | indent 2 }}
+  {{- include "application-collection.render.labels" (dict "component" "main" "context" $) | indent 2 }}
+  name: {{ include "application-collection.fullName" (dict "suffix" "scripts" "context" $) }}
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  {{- range $path, $contents := $scripts }}
+  {{ base $path }}: |
+    {{- printf "%s" $contents | nindent 4 }}
+  {{- end }}
+{{- end }}

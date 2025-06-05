@@ -1,0 +1,9 @@
+auth:
+  password: admin
+
+global:
+  imagePullSecrets:
+    - application-collection
+
+service:
+  type: NodePort

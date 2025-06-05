@@ -1,0 +1,20 @@
+annotations:
+  helm.sh/images: |
+    - image: dp.apps.rancher.io/containers/postgresql:17.4
+      name: postgresql
+    - image: dp.apps.rancher.io/containers/postgres-exporter:0
+      name: postgres-exporter
+    - image: dp.apps.rancher.io/containers/bci-busybox:15.6
+      name: bci-busybox
+apiVersion: v2
+appVersion: "17.4"
+description: PostgreSQL is an advanced object-relational database management system
+  that supports an extended subset of the SQL standard, including transactions, foreign
+  keys, subqueries, triggers, user-defined types and functions.
+home: https://apps.rancher.io/applications/postgresql
+icon: https://apps.rancher.io/logos/postgresql.png
+maintainers:
+- name: SUSE LLC
+  url: https://www.suse.com/
+name: postgresql
+version: 0.3.8

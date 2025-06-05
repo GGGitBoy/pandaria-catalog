@@ -1,0 +1,18 @@
+dependencies:
+- name: ollama
+  repository: oci://dp.apps.rancher.io/charts
+  version: 1.16.0
+- name: open-webui-pipelines
+  repository: oci://dp.apps.rancher.io/charts
+  version: 0.5.0
+- name: apache-tika
+  repository: oci://dp.apps.rancher.io/charts
+  version: 3.0.0
+- name: redis
+  repository: oci://dp.apps.rancher.io/charts
+  version: 1.0.3
+- name: postgresql
+  repository: oci://dp.apps.rancher.io/charts
+  version: 0.3.8
+digest: sha256:933d04cc153171e4ffdc62c60ed084e0ab7c2389a17964cd1daf4a72accbc5e6
+generated: "2025-05-23T06:03:27.181268408-07:00"
