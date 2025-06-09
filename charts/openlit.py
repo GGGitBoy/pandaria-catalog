@@ -75,6 +75,12 @@ class Pipeline:
             host=self.valves.OLLAMA_ENDPOINT,
         )
 
+        try:
+            models = client.list()
+            print("Available models:", models)
+        except Exception as e:
+            print("Error:", e)
+            
         #TODO: Handle model memory
         completion = client.chat(
             model=self.valves.MODEL,
