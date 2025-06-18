@@ -67,7 +67,7 @@ config:
       attributes:
       - key: k8s.cluster.name
         action: upsert
-        value: "${CLUSTER_NAME}"
+        value: "${AI_CLUSTER_NAME}"
       - key: service.instance.id
         from_attribute: k8s.pod.uid
         action: insert
