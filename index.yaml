@@ -14,6 +14,37 @@ entries:
       catalog.cattle.io/type: cluster-tool
     apiVersion: v2
     appVersion: 0.7.0
+    created: "2026-11-20T15:44:15.18552+08:00"
+    dependencies:
+    - condition: langfuse.deploy
+      name: langfuse
+      repository: file://./charts/langfuse
+      version: 2.2.4
+    description: Helm chart for managing Liz GC resources
+    digest: b434bc0d1916ae637c43aa6eddcce58c4976b13cb926cbaa1001d50567c6f1af
+    home: https://github.com/cnrancher/kopilot
+    maintainers:
+    - email: Zhenyang.Zhao@suse.com
+      name: ZhenyangZhao
+    name: kopilot
+    sources:
+    - https://github.com/cnrancher/kopilot
+    urls:
+    - assets/kopilot/kopilot-110.1.1+up0.7.1.tgz
+    version: 110.1.1+up0.7.1
+  - annotations:
+      catalog.cattle.io/auto-install: kopilot-crd=match
+      catalog.cattle.io/certified: rancher
+      catalog.cattle.io/display-name: Liz GC
+      catalog.cattle.io/kube-version: '>= 1.34.0-0 < 1.37.0-0'
+      catalog.cattle.io/namespace: kopilot-system
+      catalog.cattle.io/os: linux
+      catalog.cattle.io/permits-os: linux
+      catalog.cattle.io/rancher-version: '>= 2.15.0-0 < 2.16.0-0'
+      catalog.cattle.io/release-name: kopilot
+      catalog.cattle.io/type: cluster-tool
+    apiVersion: v2
+    appVersion: 0.7.0
     created: "2026-11-06T15:40:10.611211+08:00"
     description: Helm chart for managing Liz GC resources
     digest: c932f472d28150260bcf8c7f0ab4552fa82dafa228c9454abad4668d4b49bbfc
@@ -54,6 +85,31 @@ entries:
     - assets/kopilot/kopilot-110.0.0+up0.6.0.tgz
     version: 110.0.0+up0.6.0
   kopilot-crd:
+  - annotations:
+      catalog.cattle.io/certified: rancher
+      catalog.cattle.io/hidden: "true"
+      catalog.cattle.io/kube-version: '>= 1.34.0-0 < 1.37.0-0'
+      catalog.cattle.io/namespace: kopilot-system
+      catalog.cattle.io/os: linux
+      catalog.cattle.io/permits-os: linux
+      catalog.cattle.io/rancher-version: '>= 2.15.0-0 < 2.16.0-0'
+      catalog.cattle.io/release-name: kopilot-crd
+      catalog.cattle.io/type: cluster-tool
+    apiVersion: v2
+    appVersion: 0.7.0
+    created: "2026-11-20T15:44:15.318241+08:00"
+    description: Helm chart for Kopilot CRDs
+    digest: f05315e3fd314c8d856525d4b33afbaba633ce7b5e138ac0e1044bd540082d20
+    home: https://github.com/cnrancher/kopilot
+    maintainers:
+    - email: Zhenyang.Zhao@suse.com
+      name: ZhenyangZhao
+    name: kopilot-crd
+    sources:
+    - https://github.com/cnrancher/kopilot
+    urls:
+    - assets/kopilot-crd/kopilot-crd-110.1.1+up0.7.1.tgz
+    version: 110.1.1+up0.7.1
   - annotations:
       catalog.cattle.io/certified: rancher
       catalog.cattle.io/hidden: "true"
