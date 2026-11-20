@@ -20,3 +20,8 @@ name: kopilot
 sources:
 - https://github.com/cnrancher/kopilot
 version: 110.1.1+up0.7.1
+dependencies:
+- condition: langfuse.deploy
+  name: langfuse
+  repository: file://./charts/langfuse
+  version: 2.2.4

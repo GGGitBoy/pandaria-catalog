@@ -92,6 +92,16 @@ spec:
             value: "http://127.0.0.1:8060"
           - name: RANCHER_DEPLOYMENT_NAME
             value: {{ .Values.rancherDeploymentName | quote }}
+          {{- if and .Values.langfuse.enabled }}
+          - name: KOPILOT_LANGFUSE_ENABLED
+            value: {{ .Values.langfuse.enabled | quote }}
+          - name: KOPILOT_LANGFUSE_BASE_URL
+            value: {{ .Values.langfuse.baseURL | quote }}
+          - name: KOPILOT_LANGFUSE_PUBLIC_KEY
+            value: {{ .Values.langfuse.publicKey | quote }}
+          - name: KOPILOT_LANGFUSE_SECRET_KEY
+            value: {{ .Values.langfuse.secretKey | quote }}
+          {{- end }}
 {{ include "kopilot.postgres.env" . | nindent 10 }}
 {{ include "kopilot.rancher.sso.env" . | nindent 10 }}
 {{ if .Values.extraEnv }}
@@ -139,6 +149,16 @@ spec:
         env:
           - name: HOME
             value: /tmp
+          {{- if and .Values.langfuse.enabled }}
+          - name: KOPILOT_LANGFUSE_ENABLED
+            value: {{ .Values.langfuse.enabled | quote }}
+          - name: KOPILOT_LANGFUSE_BASE_URL
+            value: {{ .Values.langfuse.baseURL | quote }}
+          - name: KOPILOT_LANGFUSE_PUBLIC_KEY
+            value: {{ .Values.langfuse.publicKey | quote }}
+          - name: KOPILOT_LANGFUSE_SECRET_KEY
+            value: {{ .Values.langfuse.secretKey | quote }}
+          {{- end }}
         envFrom:
           - configMapRef:
               name: kopilot-global-config
