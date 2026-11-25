@@ -11,6 +11,11 @@ annotations:
   catalog.cattle.io/type: cluster-tool
 apiVersion: v2
 appVersion: 0.7.0
+dependencies:
+- condition: langfuse.deploy
+  name: langfuse
+  repository: file://./charts/langfuse
+  version: 2.2.4
 description: Helm chart for managing Liz GC resources
 home: https://github.com/cnrancher/kopilot
 maintainers:
